@@ -1,0 +1,8 @@
+pandas
+rapidfuzz
+chromadb
+pydantic>=2
+fastapi
+uvicorn
+google-genai
+python-dotenv
