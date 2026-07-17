@@ -336,7 +336,9 @@ def build_procedural_rows(rng, count, used_names):
             name_en = f"{city.title()} {noun_en}"
             name_ar = f"{noun_ar} {CITY_AR[city]}"
             if name_en in used_names:
-                name_en = f"{name_en} {rng.randint(2, 99)}"
+                suffix = rng.randint(2, 99)
+                name_en = f"{name_en} {suffix}"
+                name_ar = f"{name_ar} {suffix}"
             used_names.add(name_en)
             in_directory = rng.random() < 0.55
             mean, std = pick_amount(category, rng)
