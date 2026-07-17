@@ -8,12 +8,14 @@ category confusion matrix.
 
 import csv
 import json
+import random
 import sys
 import time
 from collections import Counter, defaultdict
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from engine.clean import _clean_cache, clean, warm_cache
 from engine.predict import RecipientStats, enrich
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
@@ -59,24 +61,43 @@ def to_raw_txn(r):
     }
 
 
+def measure_cold_latency(rows, sample_size=300, seed=1):
+    """Avg time for the deterministic (exact/fuzzy) path on a COLD cache --
+    representative of a live single-transaction API call. Must run before
+    warm_cache(), which turns every subsequent clean() call for these rows
+    into a cache hit and would otherwise make this measurement meaningless."""
+    candidates = list({r["raw_description"] for r in rows
+                        if r["channel"] in ("pos", "ecom", "sadad") and r["is_in_directory"] == "True"})
+    sample = random.Random(seed).sample(candidates, min(sample_size, len(candidates)))
+    latencies = []
+    for raw in sample:
+        _clean_cache.pop(raw, None)
+        t0 = time.perf_counter()
+        result = clean(raw)
+        elapsed_ms = (time.perf_counter() - t0) * 1000
+        if result["resolved_by"] in ("exact", "fuzzy"):
+            latencies.append(elapsed_ms)
+    return round(sum(latencies) / len(latencies), 4) if latencies else None
+
+
 def evaluate(rows, stats, label):
     n = len(rows)
     resolved_by_counts = Counter()
     merchant_correct = merchant_total = 0
+    # Known (in_directory=True) merchants SHOULD be matched; unknown ones
+    # SHOULD gracefully return no merchant -- blending both into one number
+    # makes correct "I don't know this one" behavior look like an error.
+    known_merchant_correct = known_merchant_total = 0
+    unknown_correctly_declined = unknown_total = 0
     category_correct = category_total = 0
     intent_correct = intent_total = 0
     confusion = defaultdict(Counter)
-    deterministic_latencies = []
 
     for r in rows:
         txn = to_raw_txn(r)
-        t0 = time.perf_counter()
         enriched = enrich(txn, recipient_stats=stats)
-        elapsed_ms = (time.perf_counter() - t0) * 1000
 
         resolved_by_counts[enriched.resolved_by] += 1
-        if enriched.resolved_by in ("exact", "fuzzy"):
-            deterministic_latencies.append(elapsed_ms)
 
         true_category = r["true_category"]
         if true_category:
@@ -87,8 +108,17 @@ def evaluate(rows, stats, label):
 
         if r["txn_type"] == "purchase" and r["true_merchant_id"]:
             merchant_total += 1
-            if enriched.merchant and enriched.merchant.name == r["true_merchant_name"]:
+            is_correct_match = bool(enriched.merchant and enriched.merchant.name == r["true_merchant_name"])
+            if is_correct_match:
                 merchant_correct += 1
+            if r["is_in_directory"] == "True":
+                known_merchant_total += 1
+                if is_correct_match:
+                    known_merchant_correct += 1
+            else:
+                unknown_total += 1
+                if enriched.merchant is None:
+                    unknown_correctly_declined += 1
 
         if r["is_ambiguous"] == "True":
             intent_total += 1
@@ -107,12 +137,16 @@ def evaluate(rows, stats, label):
         "resolved_by_counts": dict(resolved_by_counts),
         "merchant_accuracy": round(100 * merchant_correct / merchant_total, 2) if merchant_total else None,
         "merchant_accuracy_n": merchant_total,
+        "merchant_accuracy_known_only": (round(100 * known_merchant_correct / known_merchant_total, 2)
+                                          if known_merchant_total else None),
+        "merchant_accuracy_known_only_n": known_merchant_total,
+        "unknown_merchant_graceful_decline_pct": (round(100 * unknown_correctly_declined / unknown_total, 2)
+                                                   if unknown_total else None),
+        "unknown_merchant_graceful_decline_n": unknown_total,
         "category_accuracy": round(100 * category_correct / category_total, 2) if category_total else None,
         "category_accuracy_n": category_total,
         "intent_accuracy_ambiguous": round(100 * intent_correct / intent_total, 2) if intent_total else None,
         "intent_accuracy_ambiguous_n": intent_total,
-        "avg_deterministic_latency_ms": (round(sum(deterministic_latencies) / len(deterministic_latencies), 4)
-                                          if deterministic_latencies else None),
         "confusion_matrix": {k: dict(v) for k, v in confusion.items()},
     }
 
@@ -150,6 +184,15 @@ def main():
     stats = RecipientStats.from_raw_txns(raw_txns)
     golden_rows = [r for r in rows if r["is_golden"] == "True"]
 
+    print("Measuring cold-path (single live transaction) latency...")
+    latency_ms = measure_cold_latency(rows)
+
+    purchase_raws = [r["raw_description"] for r in rows if r["channel"] in ("pos", "ecom", "sadad")]
+    print(f"Warming merchant-resolution cache ({len(set(purchase_raws))} unique purchase strings)...")
+    t0 = time.time()
+    warm_cache(purchase_raws)
+    print(f"  done in {time.time() - t0:.1f}s")
+
     print(f"Evaluating full set ({len(rows)} rows)...")
     t0 = time.time()
     full_metrics = evaluate(rows, stats, "full_set")
@@ -160,17 +203,22 @@ def main():
 
     token_cost = compute_token_cost(rows)
 
-    result = {"full_set": full_metrics, "golden_set": golden_metrics, "token_cost": token_cost}
+    result = {"avg_deterministic_latency_ms": latency_ms, "full_set": full_metrics,
+              "golden_set": golden_metrics, "token_cost": token_cost}
     with open(METRICS_PATH, "w", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, indent=2)
 
+    print(f"\navg_deterministic_latency_ms (cold, single live transaction): {latency_ms}")
     for label, metrics in (("FULL SET", full_metrics), ("GOLDEN SET", golden_metrics)):
         print(f"\n=== {label} (n={metrics['n_rows']}) ===")
         print(f"deterministic_pct: {metrics['deterministic_pct']}%")
-        print(f"merchant_accuracy: {metrics['merchant_accuracy']}% (n={metrics['merchant_accuracy_n']})")
+        print(f"merchant_accuracy (blended): {metrics['merchant_accuracy']}% (n={metrics['merchant_accuracy_n']})")
+        print(f"merchant_accuracy (known merchants only): {metrics['merchant_accuracy_known_only']}% "
+              f"(n={metrics['merchant_accuracy_known_only_n']})")
+        print(f"unknown_merchant_graceful_decline_pct: {metrics['unknown_merchant_graceful_decline_pct']}% "
+              f"(n={metrics['unknown_merchant_graceful_decline_n']})")
         print(f"category_accuracy: {metrics['category_accuracy']}% (n={metrics['category_accuracy_n']})")
         print(f"intent_accuracy_ambiguous: {metrics['intent_accuracy_ambiguous']}% (n={metrics['intent_accuracy_ambiguous_n']})")
-        print(f"avg_deterministic_latency_ms: {metrics['avg_deterministic_latency_ms']}")
         print("resolved_by counts:", metrics["resolved_by_counts"])
 
     print("\n=== Category confusion matrix (full set) ===")

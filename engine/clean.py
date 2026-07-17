@@ -10,7 +10,6 @@ No answer-key columns exist in merchants.csv, so there is nothing to leak
 
 import csv
 import json
-from functools import lru_cache
 from pathlib import Path
 
 import chromadb
@@ -104,6 +103,24 @@ class MerchantCatalog:
             return self.merchants[mid], distance
         return None, distance
 
+    def lookup_vector_batch(self, norms):
+        """One embedding call for many query strings at once -- chromadb (and
+        the onnx embedding model underneath) is far faster batched than called
+        once per row, which matters when scoring tens of thousands of rows."""
+        if not norms:
+            return {}
+        result = self._collection.query(query_texts=norms, n_results=1)
+        out = {}
+        for i, norm in enumerate(norms):
+            ids = result["ids"][i]
+            if not ids:
+                out[norm] = (None, 1.0)
+                continue
+            distance = result["distances"][i][0]
+            mid = result["metadatas"][i][0]["merchant_id"]
+            out[norm] = (self.merchants[mid], distance) if distance <= VECTOR_MAX_DISTANCE else (None, distance)
+        return out
+
 
 _catalog = None
 
@@ -115,11 +132,11 @@ def get_catalog():
     return _catalog
 
 
-@lru_cache(maxsize=None)
-def clean(raw_description: str) -> dict:
-    """Resolve a raw string to a known merchant. Pure string->merchant; the
-    caller decides (via `channel`) whether it's worth calling at all.
-    Cached -- many raw strings repeat verbatim across a transaction history."""
+_clean_cache = {}  # raw_description -> result dict; manual so warm_cache() can bulk-fill it
+
+
+def _resolve_exact_or_fuzzy(raw_description):
+    """Returns a finished result dict, or None if a vector lookup is still needed."""
     norm = normalize(raw_description)
     catalog = get_catalog()
 
@@ -131,12 +148,56 @@ def clean(raw_description: str) -> dict:
     if merchant:
         return {"merchant": merchant, "resolved_by": "fuzzy", "confidence": round(score / 100, 3), "normalized": norm}
 
-    merchant, distance = catalog.lookup_vector(norm)
-    if merchant:
-        confidence = round(max(0.0, 1 - distance), 3)
-        return {"merchant": merchant, "resolved_by": "vector", "confidence": confidence, "normalized": norm}
+    return None
 
-    return {"merchant": None, "resolved_by": "vector", "confidence": 0.1, "normalized": norm}
+
+def clean(raw_description: str) -> dict:
+    """Resolve a raw string to a known merchant. Pure string->merchant; the
+    caller decides (via `channel`) whether it's worth calling at all.
+    Cached -- many raw strings repeat verbatim across a transaction history."""
+    cached = _clean_cache.get(raw_description)
+    if cached is not None:
+        return cached
+
+    result = _resolve_exact_or_fuzzy(raw_description)
+    if result is None:
+        norm = normalize(raw_description)
+        merchant, distance = get_catalog().lookup_vector(norm)
+        if merchant:
+            result = {"merchant": merchant, "resolved_by": "vector", "confidence": round(max(0.0, 1 - distance), 3), "normalized": norm}
+        else:
+            result = {"merchant": None, "resolved_by": "vector", "confidence": 0.1, "normalized": norm}
+
+    _clean_cache[raw_description] = result
+    return result
+
+
+def warm_cache(raw_descriptions, batch_size=500):
+    """Pre-resolve many raw strings at once: exact/fuzzy stay per-row (already
+    fast, in-memory), but every miss is batched into as few chromadb embedding
+    calls as possible instead of one call per row -- this is what turns an
+    eval run over tens of thousands of rows from hours into seconds."""
+    unique = [r for r in dict.fromkeys(raw_descriptions) if r not in _clean_cache]
+    needs_vector = []  # (raw_description, norm)
+    for raw in unique:
+        result = _resolve_exact_or_fuzzy(raw)
+        if result is not None:
+            _clean_cache[raw] = result
+        else:
+            needs_vector.append((raw, normalize(raw)))
+
+    catalog = get_catalog()
+    for i in range(0, len(needs_vector), batch_size):
+        chunk = needs_vector[i:i + batch_size]
+        norms = [norm for _, norm in chunk]
+        vector_results = catalog.lookup_vector_batch(norms)
+        for raw, norm in chunk:
+            merchant, distance = vector_results[norm]
+            if merchant:
+                _clean_cache[raw] = {"merchant": merchant, "resolved_by": "vector",
+                                      "confidence": round(max(0.0, 1 - distance), 3), "normalized": norm}
+            else:
+                _clean_cache[raw] = {"merchant": None, "resolved_by": "vector", "confidence": 0.1, "normalized": norm}
 
 
 def should_attempt_merchant_lookup(channel: str) -> bool:
