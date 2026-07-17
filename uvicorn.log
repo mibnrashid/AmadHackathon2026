@@ -1,12 +1,15 @@
-INFO:     Started server process [30632]
+INFO:     Started server process [37744]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
-INFO:     127.0.0.1:5612 - "POST /enrich HTTP/1.1" 200 OK
-INFO:     127.0.0.1:2010 - "POST /correct HTTP/1.1" 200 OK
-INFO:     127.0.0.1:8563 - "POST /enrich HTTP/1.1" 200 OK
-INFO:     127.0.0.1:8564 - "GET /metrics HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:13991 - "GET /metrics HTTP/1.1" 200 OK
-INFO:     127.0.0.1:12914 - "GET / HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:12914 - "GET /favicon.ico HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:12914 - "GET / HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:11185 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:10952 - "GET /user/U0023/dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:7496 - "GET /user/U0023/dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:9236 - "POST /chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:9252 - "POST /chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:6646 - "POST /chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:12193 - "POST /chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:3000 - "POST /chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:3046 - "POST /chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:10647 - "GET /user/U0023/dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:10648 - "POST /enrich HTTP/1.1" 200 OK

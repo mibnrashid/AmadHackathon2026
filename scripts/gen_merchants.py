@@ -2,23 +2,37 @@
 
 Seed merchants (real anchors from the spec) are used verbatim, then expanded
 with a curated brand long tail and a procedurally generated long tail to
-reach ~500 merchants total, keeping ~70% in_directory=true.
+reach ~500 merchants total.
+
+Real-bank realism: a bank knows almost all of its merchants, so in_directory
+is true for ~97% of rows -- only a small "new/unverified" slice (~3%) is left
+false so Layer 1's vector fallback still has something to catch.
 
 Truth-first: every field here IS the truth (there is no corruption step for
 merchants.csv itself -- descriptor_patterns are the "known aliases" Layer 1
 keeps in its directory; raw transaction strings are corrupted later in
 gen_transactions.py).
+
+Every merchant gets >=3 descriptor_patterns, and every alias (name_en,
+name_ar, and each descriptor_pattern) is checked -- after the same
+normalize() Layer 1 uses for its exact index -- against every other
+merchant's aliases, so no two merchants can collide in the exact/fuzzy
+index.
 """
 
 import csv
 import json
 import random
 import re
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from engine.normalize import normalize
 
 RNG_SEED = 42
 TARGET_TOTAL = 500
-TARGET_IN_DIRECTORY_RATIO = 0.70
+TARGET_IN_DIRECTORY_RATIO = 0.97
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 OUT_PATH = DATA_DIR / "merchants.csv"
@@ -85,7 +99,8 @@ SEED_AMOUNT_OVERRIDES = {
     "SEC (electricity)": (350, 150), "NWC (water)": (110, 40),
     "Saudia": (1200, 500), "flynas": (450, 200), "Absher": (60, 40),
 }
-# Real anchors are mostly known to Layer 1; a few stay unknown on purpose.
+# Real anchors are mostly known to Layer 1; a couple stay unknown on purpose
+# -- these are protected from the ratio-balancing step below.
 SEED_NOT_IN_DIRECTORY = {"Half Million", "Barn's"}
 
 # ---------------------------------------------------------------------------
@@ -258,60 +273,139 @@ def pick_cities(in_directory, rng):
     return sorted(rng.sample(CITIES, k=rng.randint(1, 3)))
 
 
-def gen_descriptor_patterns(name_en, rng):
+def build_candidate_patterns(name_en, max_count=12):
+    """Ordered candidate POS-string aliases for a merchant name, most
+    specific/least collision-prone first. Short abbreviations (word-initials,
+    4-char truncation+*) come last because they're the ones likely to be
+    shared by two different brands (e.g. "Costa Coffee" and "Caribou Coffee"
+    both abbreviate to "CC") -- select_non_conflicting() below will skip them
+    when that happens rather than let two merchants share an alias."""
     upper = name_en.upper().replace("'", "")
-    patterns = {upper}
     compact = re.sub(r"[^A-Z0-9]", "", upper)
-    if compact and compact != upper:
-        patterns.add(compact)
+    base = compact or upper
+    candidates = []
+
+    def add(c):
+        if c and c not in candidates:
+            candidates.append(c)
+
+    add(upper)
+    if compact != upper:
+        add(compact)
     if " " in upper:
-        patterns.add(upper.replace(" ", "_"))
+        add(upper.replace(" ", "_"))
+    add("SP*" + base[:8])
     words = upper.split()
     if len(words) > 1:
-        abbrev = "".join(w[0] for w in words if w[0].isalnum())
+        abbrev = "".join(w[0] for w in words if w and w[0].isalnum())
         if len(abbrev) >= 2:
-            patterns.add(abbrev)
-    if rng.random() < 0.3 and compact:
-        patterns.add("SP*" + compact[:8])
-    return sorted(patterns)[:5]
+            add(abbrev)
+    if len(base) > 4:
+        add(base[:4] + "*")
+    i = 1
+    while len(candidates) < max_count:
+        add(f"{base}{i}")
+        i += 1
+    return candidates
 
 
-def build_seed_rows(rng):
+def select_non_conflicting(name_en, candidates, registry, min_count=3, max_count=6):
+    """Walks `candidates` in priority order, keeping any whose normalize()'d
+    form isn't already claimed by a DIFFERENT merchant, and registers each
+    one taken. Skipping a conflicting candidate (rather than renaming the
+    merchant) keeps real brand names untouched while still guaranteeing no
+    two merchants share an alias in Layer 1's exact index."""
+    chosen = []
+    for cand in candidates:
+        if len(chosen) >= max_count:
+            break
+        n = normalize(cand)
+        if not n:
+            continue
+        owner = registry.get(n)
+        if owner and owner != name_en:
+            continue
+        chosen.append(cand)
+        registry[n] = name_en
+    return sorted(chosen)
+
+
+def register_aliases(name_en, aliases, registry):
+    """Registers normalize()'d aliases for a merchant. Returns the aliases
+    that collide (normalize to the same string) with a DIFFERENT merchant
+    already in the registry -- exactly the condition that would make Layer 1's
+    exact_index resolve two merchants to one entry."""
+    conflicts = []
+    for a in aliases:
+        n = normalize(a)
+        if not n:
+            continue
+        owner = registry.get(n)
+        if owner and owner != name_en:
+            conflicts.append(a)
+        else:
+            registry[n] = name_en
+    return conflicts
+
+
+def build_seed_rows(rng, registry):
     rows = []
-    for name_en, name_ar, category, patterns in SEED_MERCHANTS:
+    for name_en, name_ar, category, hand_patterns in SEED_MERCHANTS:
         in_directory = name_en not in SEED_NOT_IN_DIRECTORY
         mean, std = SEED_AMOUNT_OVERRIDES.get(name_en) or pick_amount(category, rng)
+
+        id_conflicts = register_aliases(name_en, [name_en, name_ar], registry)
+        if id_conflicts:
+            print(f"WARNING: seed merchant {name_en!r} identity collides: {id_conflicts}")
+
+        candidates = list(hand_patterns) + build_candidate_patterns(name_en)
+        patterns = select_non_conflicting(name_en, candidates, registry, min_count=3, max_count=6)
+        if len(patterns) < 3:
+            print(f"WARNING: seed merchant {name_en!r} only got {len(patterns)} non-conflicting patterns")
+
         rows.append({
             "name_en": name_en, "name_ar": name_ar, "category": category,
             "in_directory": in_directory,
-            "descriptor_patterns": list(patterns),
+            "descriptor_patterns": patterns,
             "amount_mean": mean, "amount_std": std,
             "recurrence": pick_recurrence(category, name_en),
             "aggregator": pick_aggregator(category, name_en, rng),
             "cities": pick_cities(in_directory, rng),
+            "protected_false": name_en in SEED_NOT_IN_DIRECTORY,
         })
     return rows
 
 
-def build_curated_rows(rng):
+def build_curated_rows(rng, registry):
     rows = []
     for category, brands in CURATED_TAIL.items():
         for name_en, name_ar in brands:
-            in_directory = rng.random() < 0.80
+            in_directory = rng.random() < 0.95
             mean, std = pick_amount(category, rng)
+
+            id_conflicts = register_aliases(name_en, [name_en, name_ar], registry)
+            if id_conflicts:
+                print(f"WARNING: curated merchant {name_en!r} identity collides: {id_conflicts}")
+
+            candidates = build_candidate_patterns(name_en)
+            patterns = select_non_conflicting(name_en, candidates, registry, min_count=3, max_count=6)
+            if len(patterns) < 3:
+                print(f"WARNING: curated merchant {name_en!r} only got {len(patterns)} non-conflicting patterns")
+
             rows.append({
                 "name_en": name_en, "name_ar": name_ar, "category": category,
                 "in_directory": in_directory,
-                "descriptor_patterns": gen_descriptor_patterns(name_en, rng),
+                "descriptor_patterns": patterns,
                 "amount_mean": mean, "amount_std": std,
                 "recurrence": pick_recurrence(category, name_en),
                 "aggregator": pick_aggregator(category, name_en, rng),
                 "cities": pick_cities(in_directory, rng),
+                "protected_false": False,
             })
     return rows
 
 
-def build_procedural_rows(rng, count, used_names):
+def build_procedural_rows(rng, count, registry):
     total_weight = sum(PROCEDURAL_WEIGHTS.values())
     counts = {cat: round(count * w / total_weight) for cat, w in PROCEDURAL_WEIGHTS.items()}
     # Fix rounding drift so the sum matches `count` exactly.
@@ -335,21 +429,34 @@ def build_procedural_rows(rng, count, used_names):
             noun_en, noun_ar = rng.choice(noun_pairs)
             name_en = f"{city.title()} {noun_en}"
             name_ar = f"{noun_ar} {CITY_AR[city]}"
-            if name_en in used_names:
-                suffix = rng.randint(2, 99)
-                name_en = f"{name_en} {suffix}"
-                name_ar = f"{name_ar} {suffix}"
-            used_names.add(name_en)
-            in_directory = rng.random() < 0.55
+
+            # Procedural names are cheap to regenerate: grow a numeric suffix
+            # until the name itself (not just its derived patterns) is free
+            # of any identity collision, then let select_non_conflicting()
+            # handle any remaining pattern-level collisions by skipping them.
+            for _ in range(30):
+                if (registry.get(normalize(name_en)) in (None, name_en)
+                        and registry.get(normalize(name_ar)) in (None, name_en)):
+                    break
+                suffix = rng.randint(2, 999)
+                name_en = f"{city.title()} {noun_en} {suffix}"
+                name_ar = f"{noun_ar} {CITY_AR[city]} {suffix}"
+
+            register_aliases(name_en, [name_en, name_ar], registry)
+            candidates = build_candidate_patterns(name_en)
+            patterns = select_non_conflicting(name_en, candidates, registry, min_count=3, max_count=6)
+
+            in_directory = rng.random() < 0.95
             mean, std = pick_amount(category, rng)
             rows.append({
                 "name_en": name_en, "name_ar": name_ar, "category": category,
                 "in_directory": in_directory,
-                "descriptor_patterns": gen_descriptor_patterns(name_en, rng),
+                "descriptor_patterns": patterns,
                 "amount_mean": mean, "amount_std": std,
                 "recurrence": pick_recurrence(category, name_en),
                 "aggregator": pick_aggregator(category, name_en, rng),
                 "cities": pick_cities(in_directory, rng),
+                "protected_false": False,
             })
             made += 1
     return rows
@@ -366,7 +473,7 @@ def balance_in_directory_ratio(rows, rng, target_ratio):
         for i in idx:
             if to_flip == 0:
                 break
-            if rows[i]["in_directory"]:
+            if rows[i]["in_directory"] and not rows[i]["protected_false"]:
                 rows[i]["in_directory"] = False
                 rows[i]["cities"] = pick_cities(False, rng)
                 to_flip -= 1
@@ -375,7 +482,7 @@ def balance_in_directory_ratio(rows, rng, target_ratio):
         for i in idx:
             if to_flip == 0:
                 break
-            if not rows[i]["in_directory"]:
+            if not rows[i]["in_directory"] and not rows[i]["protected_false"]:
                 rows[i]["in_directory"] = True
                 rows[i]["cities"] = pick_cities(True, rng)
                 to_flip -= 1
@@ -383,13 +490,13 @@ def balance_in_directory_ratio(rows, rng, target_ratio):
 
 def main():
     rng = random.Random(RNG_SEED)
+    registry = {}  # normalize(alias) -> owning name_en, shared across all rows
 
-    seed_rows = build_seed_rows(rng)
-    curated_rows = build_curated_rows(rng)
-    used_names = {r["name_en"] for r in seed_rows + curated_rows}
+    seed_rows = build_seed_rows(rng, registry)
+    curated_rows = build_curated_rows(rng, registry)
 
     remaining = TARGET_TOTAL - len(seed_rows) - len(curated_rows)
-    procedural_rows = build_procedural_rows(rng, remaining, used_names)
+    procedural_rows = build_procedural_rows(rng, remaining, registry)
 
     all_rows = seed_rows + curated_rows + procedural_rows
     balance_in_directory_ratio(all_rows, rng, TARGET_IN_DIRECTORY_RATIO)
@@ -423,8 +530,11 @@ def main():
     total = len(all_rows)
     true_count = sum(1 for r in all_rows if r["in_directory"])
     cat_counts = {c: sum(1 for r in all_rows if r["category"] == c) for c in CATEGORIES}
+    min_patterns = min(len(r["descriptor_patterns"]) for r in all_rows)
     print(f"Wrote {total} merchants to {OUT_PATH}")
     print(f"in_directory=true ratio: {true_count}/{total} = {true_count/total:.1%}")
+    print(f"minimum descriptor_patterns count across all merchants: {min_patterns}")
+    print(f"unique normalized aliases registered: {len(registry)}")
     print("Category spread:")
     for c in CATEGORIES:
         print(f"  {c:14s} {cat_counts[c]:4d}")

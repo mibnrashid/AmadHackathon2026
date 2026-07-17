@@ -13,6 +13,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from google import genai
 
+from engine.aggregate import build_dashboard
 from engine.predict import RecipientStats, enrich
 
 load_dotenv()
@@ -92,16 +93,56 @@ def report(user_id: str, month: str) -> str:
     return resp.text
 
 
-def chat(user_id: str, message: str) -> str:
-    """Answer a free-text question about the user's spending, in Arabic."""
-    enriched = _enrich_user(user_id, month=None)
-    agg = _aggregate_by_category(enriched)
+CHAT_SYSTEM_PROMPT = (
+    "أنت مساعد مالي شخصي سعودي، ودود وخبير. تجيب فقط بالاعتماد على بيانات هذا المستخدم "
+    "المرفقة أدناه -- لا تخترع أي فئة أو رقم أو تاجر غير موجود فيها، وإن لم تكفِ البيانات "
+    "للإجابة قل ذلك بوضوح بدل التخمين. أجوبتك قصيرة ومحددة وبأرقام حقيقية من البيانات مباشرة. "
+    "يمكنك الإجابة عن أي سؤال مالي شخصي: أين ذهبت الفلوس، الصرف في فئة أو تاجر معيّن، "
+    "المقارنة بين فئتين أو بين شهرين، الاتجاهات، هل يقدر يتحمّل مصروفاً معيّناً، الميزانية، "
+    "أو التوفير لتحقيق هدف. إذا سُئلت عن التوفير أو هدف مبلغ معيّن، اقترح تخفيضات محددة "
+    "ومقدّرة بالريال من فئات إنفاق حقيقية تظهر في البيانات (مثلاً \"قلّل مطاعم بمقدار كذا\")، "
+    "وليس نصائح عامة."
+)
 
-    prompt = (
-        "أنت مساعد مالي شخصي. أجب عن سؤال المستخدم بالعربية بإيجاز ودقة، "
-        "بالاعتماد فقط على البيانات المجمّعة التالية. إن لم تكفِ البيانات للإجابة، قل ذلك بوضوح.\n\n"
-        "بيانات الصرف حسب الفئة (كامل الفترة المتاحة):\n" + "\n".join(_format_aggregate_lines(agg)) +
-        f"\n\nسؤال المستخدم: {message}"
-    )
+
+def _format_dashboard_context(dash: dict) -> str:
+    u, t = dash["user"], dash["totals"]
+    lines = [
+        f"الشخصية: {u['persona']} | المدينة: {u['home_city']}",
+        f"الدخل الشهري المصرّح به: {u['income_monthly']:.2f} ريال",
+        f"الشهر المعروض: {dash['month']}",
+        "",
+        f"إجمالي الدخل هذا الشهر: {t['income']:.2f} ريال",
+        f"إجمالي الصرف هذا الشهر: {t['spending']:.2f} ريال",
+        f"الصافي: {t['net']:.2f} ريال | نسبة الادخار: {t['savings_rate'] * 100:.1f}%",
+        "",
+        "الصرف حسب الفئة (من الأعلى للأقل):",
+    ]
+    for c in dash["by_category"]:
+        lines.append(f"- {c['label_ar']} ({c['category']}): {c['count']} عملية، "
+                      f"{c['total']:.2f} ريال ({c['pct']:.1f}%)")
+
+    lines.append("")
+    lines.append("أكثر التجار صرفاً:")
+    for m in dash["top_merchants"]:
+        lines.append(f"- {m['name']}: {m['total']:.2f} ريال ({m['count']} عملية)")
+
+    lines.append("")
+    lines.append("أحدث العمليات:")
+    recent = sorted(dash["transactions"], key=lambda e: e.timestamp, reverse=True)[:15]
+    for e in recent:
+        lines.append(f"- {e.timestamp.date()} | {e.display_name} | {e.category} | "
+                      f"{e.amount:.2f} {e.currency}")
+
+    return "\n".join(lines)
+
+
+def chat(user_id: str, message: str, month: str = None) -> str:
+    """Answer any personal-finance question about this user, in Arabic.
+    month: 'YYYY-MM', or None for the user's latest available month --
+    same aggregate view build_dashboard() gives the /dashboard endpoint."""
+    dash = build_dashboard(user_id, month)
+    context = _format_dashboard_context(dash)
+    prompt = f"{CHAT_SYSTEM_PROMPT}\n\nبيانات المستخدم:\n{context}\n\nسؤال المستخدم: {message}"
     resp = get_client().models.generate_content(model=MODEL, contents=prompt)
     return resp.text

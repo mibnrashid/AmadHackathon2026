@@ -1,0 +1,223 @@
+{
+  "avg_deterministic_latency_ms": 45.1532,
+  "full_set": {
+    "label": "full_set",
+    "n_rows": 31476,
+    "deterministic_pct": 87.06,
+    "resolved_by_counts": {
+      "exact": 20589,
+      "rules": 5271,
+      "vector": 4072,
+      "fuzzy": 1539,
+      "correction": 5
+    },
+    "merchant_accuracy": 78.9,
+    "merchant_accuracy_n": 25418,
+    "merchant_accuracy_known_only": 88.41,
+    "merchant_accuracy_known_only_n": 22685,
+    "unknown_merchant_graceful_decline_pct": 54.96,
+    "unknown_merchant_graceful_decline_n": 2733,
+    "category_accuracy": 87.8,
+    "category_accuracy_n": 30694,
+    "intent_accuracy_ambiguous": 90.31,
+    "intent_accuracy_ambiguous_n": 2497,
+    "confusion_matrix": {
+      "food": {
+        "food": 7655,
+        "shopping": 1091,
+        "bills": 122,
+        "telecom": 11,
+        "health": 11,
+        "groceries": 107,
+        "charity": 10,
+        "entertainment": 24,
+        "transport": 4,
+        "government": 2
+      },
+      "transport": {
+        "transport": 2476,
+        "shopping": 468,
+        "bills": 7,
+        "food": 4,
+        "health": 4,
+        "entertainment": 1,
+        "groceries": 1
+      },
+      "telecom": {
+        "telecom": 2848,
+        "shopping": 186,
+        "entertainment": 1,
+        "groceries": 1,
+        "bills": 2,
+        "health": 1
+      },
+      "transfer": {
+        "transfer": 1069,
+        "food": 67,
+        "bills": 20
+      },
+      "health": {
+        "health": 862,
+        "shopping": 196,
+        "entertainment": 17,
+        "groceries": 1,
+        "charity": 4,
+        "food": 5,
+        "transport": 1,
+        "travel": 1,
+        "education": 1
+      },
+      "income": {
+        "income": 1806,
+        "transfer": 81
+      },
+      "groceries": {
+        "groceries": 3560,
+        "shopping": 483,
+        "bills": 14,
+        "food": 14,
+        "telecom": 6,
+        "government": 2,
+        "education": 1,
+        "charity": 1,
+        "transport": 1
+      },
+      "travel": {
+        "travel": 553,
+        "shopping": 118,
+        "food": 2,
+        "telecom": 17
+      },
+      "bills": {
+        "bills": 1466,
+        "food": 17,
+        "shopping": 82,
+        "government": 3,
+        "travel": 1,
+        "groceries": 1
+      },
+      "shopping": {
+        "shopping": 1836,
+        "groceries": 65,
+        "telecom": 16,
+        "bills": 8,
+        "entertainment": 1,
+        "food": 21,
+        "travel": 1
+      },
+      "education": {
+        "education": 273,
+        "shopping": 77
+      },
+      "entertainment": {
+        "entertainment": 1320,
+        "shopping": 174,
+        "telecom": 21,
+        "food": 12,
+        "groceries": 1,
+        "health": 4,
+        "government": 1
+      },
+      "cash": {
+        "cash": 945
+      },
+      "charity": {
+        "charity": 122,
+        "shopping": 50,
+        "entertainment": 6,
+        "food": 5,
+        "transport": 1
+      },
+      "government": {
+        "shopping": 56,
+        "government": 159,
+        "bills": 1,
+        "telecom": 7,
+        "health": 1
+      }
+    }
+  },
+  "golden_set": {
+    "label": "golden_set",
+    "n_rows": 214,
+    "deterministic_pct": 85.05,
+    "resolved_by_counts": {
+      "vector": 32,
+      "rules": 104,
+      "exact": 67,
+      "fuzzy": 11
+    },
+    "merchant_accuracy": 64.21,
+    "merchant_accuracy_n": 95,
+    "merchant_accuracy_known_only": 93.85,
+    "merchant_accuracy_known_only_n": 65,
+    "unknown_merchant_graceful_decline_pct": 43.33,
+    "unknown_merchant_graceful_decline_n": 30,
+    "category_accuracy": 88.44,
+    "category_accuracy_n": 199,
+    "intent_accuracy_ambiguous": 95.24,
+    "intent_accuracy_ambiguous_n": 84,
+    "confusion_matrix": {
+      "health": {
+        "shopping": 3,
+        "health": 4
+      },
+      "income": {
+        "income": 21,
+        "transfer": 1
+      },
+      "food": {
+        "food": 27,
+        "shopping": 4
+      },
+      "cash": {
+        "cash": 10
+      },
+      "travel": {
+        "travel": 5
+      },
+      "education": {
+        "education": 3
+      },
+      "transport": {
+        "transport": 11,
+        "shopping": 2
+      },
+      "bills": {
+        "bills": 15
+      },
+      "groceries": {
+        "groceries": 11,
+        "shopping": 4
+      },
+      "entertainment": {
+        "entertainment": 8,
+        "shopping": 2
+      },
+      "telecom": {
+        "telecom": 11
+      },
+      "shopping": {
+        "groceries": 2,
+        "shopping": 4
+      },
+      "transfer": {
+        "transfer": 45,
+        "food": 2,
+        "bills": 1
+      },
+      "government": {
+        "telecom": 1
+      },
+      "charity": {
+        "shopping": 1,
+        "charity": 1
+      }
+    }
+  },
+  "token_cost": {
+    "naive_raw_to_llm_tokens": 2953457,
+    "our_amortized_tokens": 34308.8,
+    "multiplier": 86.1
+  }
+}

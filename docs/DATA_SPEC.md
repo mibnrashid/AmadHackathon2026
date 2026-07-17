@@ -18,8 +18,8 @@ Goal: ~500 merchants, ~150 users, ~30,000 transactions, plus a ~200-row hand-ver
 | name_en | canonical English name |
 | name_ar | canonical Arabic name |
 | category | one of the 15 keys (spending ones only) |
-| in_directory | bool — does Layer 1 "know" it. Keep ~70% true, ~30% false |
-| descriptor_patterns | list of dirty raw forms, e.g. `["MCD","MCDONALDS","MCD*","M DONALDS"]` |
+| in_directory | bool — does Layer 1 "know" it. Keep ~97% true, ~3% false (real-bank realism: a bank knows almost all its merchants; the ~3% "new/unverified" slice exists only so the vector fallback still has something to catch) |
+| descriptor_patterns | list of dirty raw forms, e.g. `["MCD","MCDONALDS","MCD*","M DONALDS"]` — every merchant gets **at least 3**, and no two merchants may share an alias (name_en, name_ar, or any pattern) after normalization; generation must dedupe/skip conflicting candidates rather than let two merchants collide in Layer 1's exact index |
 | amount_mean, amount_std | typical spend, SAR |
 | recurrence | `none` / `weekly` / `monthly` |
 | aggregator | app name if it shows wrapped (e.g. `JAHEZ`), else empty |
@@ -27,7 +27,7 @@ Goal: ~500 merchants, ~150 users, ~30,000 transactions, plus a ~200-row hand-ver
 
 ### Seed merchants (real anchors — expand from these to ~500)
 
-Use these exactly; then generate a plausible long tail. Keep ~70% `in_directory=true`.
+Use these exactly; then generate a plausible long tail. Keep ~97% `in_directory=true`.
 
 | name_en | name_ar | category | descriptor_patterns |
 |---|---|---|---|
@@ -147,8 +147,8 @@ Flag these rows `is_ambiguous=true`. Reuse a small pool of recipients per user (
 - Merchant frequency: power-law — top ~20 merchants ≈ 60% of purchase volume; long tail rare.
 - Mix: ~75% purchase, ~15% transfer, ~5% income, ~3% cash, ~2% FX (USD subs/travel).
 - Recurring: salary 1×/mo (on payday), rent 1×/mo, subs + telecom + utilities monthly.
-- Unknown merchants (`in_directory=false`) appear in ~10–15% of purchase rows → exercises vector fallback.
-- ~2–3% pure garbage strings that map to nothing → tests graceful failure.
+- Unknown merchants (`in_directory=false`) appear in ~3% of purchase rows → exercises the vector fallback occasionally, without pretending a real bank is mostly blind to its own merchants.
+- ~1% pure garbage strings that map to nothing → tests graceful failure.
 
 ---
 

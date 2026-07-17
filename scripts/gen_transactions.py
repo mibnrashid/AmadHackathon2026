@@ -580,14 +580,14 @@ def main():
 
         used = len(sub_rows) + len(transfer_rows) + len(income_rows) + len(cash_rows)
         remaining = max(0, target - used)
-        garbage_count = round(0.025 * target)
+        garbage_count = round(0.01 * target)
         remaining -= garbage_count
         garbage_rows = generate_garbage_rows(rng, user, max(0, garbage_count))
 
         remaining = max(0, remaining)
         purchase_rows = generate_purchase_rows(
             rng, user, persona_pools, unknown_pool, fx_pool, remaining,
-            unknown_frac=0.12, fx_frac=0.02,
+            unknown_frac=0.03, fx_frac=0.02,
         )
 
         all_rows.extend(sub_rows + transfer_rows + income_rows + cash_rows + garbage_rows + purchase_rows)

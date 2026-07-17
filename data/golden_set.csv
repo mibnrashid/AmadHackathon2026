@@ -1,0 +1,215 @@
+﻿txn_id,user_id,raw_description,amount,currency,timestamp,channel,counterparty_ref,txn_type,true_merchant_id,true_merchant_name,true_category,true_intent,is_ambiguous,is_in_directory,is_recurring_instance,corruption_ops,expected_counterparty_id,mark_for_correction,is_golden
+T000042,U0069,STC PAY TRANSFER,-4221.5,SAR,2025-12-23T16:38:19,wallet,CP-U0069-BENEFICIARY1,transfer,,,transfer,remittance,True,False,False,"[""known_template""]",beneficiary:1,False,True
+T000054,U0070,APPLEPAY *NANADIRECT_76369,-100.15,SAR,2025-12-19T18:40:11,pos,,purchase,M0019,Nana Direct,groceries,,False,False,False,"[""known_pattern"", ""prefix_inject"", ""id_inject""]",,False,True
+T000078,U0002,STARBUCKS RYD,-24.26,SAR,2026-03-07T22:38:16,ecom,,purchase,M0331,Starbucks,food,,False,True,False,"[""known_pattern"", ""city_code""]",,False,True
+T000204,U0016,تموينات الرياض,-104.11,SAR,2026-03-28T14:33:30,pos,,purchase,M0006,Ryd Mart,groceries,,False,True,False,"[""arabic_base""]",,False,True
+T000537,U0054,BANK TRANSFER,-89.86,SAR,2025-10-21T18:09:59,wallet,CP-U0054-ONE-6e222,transfer,,,food,personal,True,False,False,"[""known_template""]",unknown,False,True
+T001096,U0036,POS JED_GOVERNMENT_OFFICE_60815,-367.4,SAR,2025-08-31T16:49:46,sadad,,purchase,M0457,Jed Government Office,government,,False,False,False,"[""uppercase"", ""space_symbol"", ""prefix_inject"", ""id_inject""]",,False,True
+T001211,U0027,MADA نادي حائل,-45.93,SAR,2026-04-14T18:15:09,ecom,,purchase,M0008,Hail Club,entertainment,,False,False,False,"[""arabic_base"", ""prefix_inject""]",,False,True
+T001227,U0018,STC PAY TRANSFER,200.0,SAR,2025-09-15T12:13:24,wallet,CP-U0018-ONE-6fc87,transfer,,,transfer,gift,True,False,False,"[""known_template""]",unknown,False,True
+T001349,U0025,TIFB* SA,-52.39,SAR,2026-03-11T11:14:22,ecom,,purchase,M0418,Tif Bistro,food,,False,False,False,"[""known_pattern"", ""city_code""]",,False,True
+T001371,U0022,مولـّانو,-56.48,SAR,2025-08-22T14:47:46,ecom,,purchase,M0021,Molano,food,,False,True,False,"[""arabic_base"", ""arabic_noise""]",,False,True
+T001461,U0138,WALLET TRANSFER REF348309,-133.0,SAR,2026-04-18T20:09:51,transfer,CP-U0138-FRIEND2,transfer,,,transfer,split,True,False,False,"[""known_template"", ""id_inject""]",friend:2,False,True
+T001653,U0110,STC PAY TRANSFER,19101.51,SAR,2026-01-25T10:52:00,wallet,CP-U0110-EMPLOYER2,transfer,,,income,salary,True,False,True,"[""known_template""]",employer,True,True
+T001902,U0048,SALARY TRANSFER - SOLUTIONS LLC,16234.22,SAR,2026-04-15T07:53:00,transfer,CP-U0048-EMPLOYER,income,,,income,,False,False,True,"[""known_template""]",employer,False,True
+T001933,U0041,بنده,-122.46,SAR,2026-05-17T12:42:01,pos,,purchase,M0287,Panda,groceries,,False,True,False,"[""known_pattern""]",,False,True
+T002142,U0059,MAD STORE#55232,-168.57,SAR,2025-11-19T09:13:12,pos,,purchase,M0463,Mad Store,groceries,,False,False,False,"[""uppercase"", ""id_inject""]",,False,True
+T002269,U0055,STC PAY TRANSFER,-100.0,SAR,2025-11-04T14:32:41,wallet,CP-U0055-ONE-e5547,transfer,,,transfer,gift,True,False,False,"[""known_template""]",unknown,False,True
+T002325,U0041,YANBU MOBILE SHOP 9457,-91.91,SAR,2025-12-11T16:05:00,ecom,,purchase,M0076,Yanbu Mobile Shop,telecom,,False,True,True,"[""uppercase"", ""id_inject""]",,False,True
+T002864,U0084,APPLEPAY *TAMIMI RYD,-224.14,SAR,2026-05-05T10:05:08,ecom,,purchase,M0098,Tamimi,groceries,,False,True,False,"[""known_pattern"", ""prefix_inject"", ""city_code""]",,False,True
+T002879,U0037,SP*JEDTELEC,-131.6,SAR,2025-12-13T13:03:09,sadad,,purchase,M0158,Jed Telecom,telecom,,False,False,False,"[""known_pattern""]",,False,True
+T002916,U0136,ATM WITHDRAWAL SA,-118.2,SAR,2026-03-30T19:35:56,atm,,cash,,,cash,,False,False,False,"[""city_code""]",,False,True
+T002961,U0051,WALLET TRANSFER REF693563,-1367.99,SAR,2026-06-05T16:15:52,transfer,CP-U0051-BENEFICIARY2,transfer,,,transfer,remittance,True,False,False,"[""known_template"", ""id_inject""]",beneficiary:2,False,True
+T002964,U0090,JAHEZ*RYD EATERY,-34.08,SAR,2026-06-26T07:11:28,pos,,purchase,M0088,Ryd Eatery,food,,False,False,False,"[""uppercase"", ""aggregator_wrap""]",,False,True
+T003016,U0046,URPAY TRANSFER REF845093,-3400,SAR,2026-06-28T10:17:00,wallet,CP-U0046-LANDLORD,transfer,,,bills,bill,True,False,True,"[""known_template"", ""id_inject""]",landlord,False,True
+T003042,U0029,WALLET TRANSFER REF764758,-4450,SAR,2026-04-27T19:41:00,wallet,CP-U0029-LANDLORD,transfer,,,bills,bill,True,False,True,"[""known_template"", ""id_inject""]",landlord,False,True
+T003090,U0069,REF#00000000,-78.41,SAR,2026-02-23T12:56:55,ecom,,purchase,,,,,False,False,False,"[""garbage""]",,False,True
+T003141,U0078,STC PAY TRANSFER,19678.24,SAR,2025-12-26T08:59:00,wallet,CP-U0078-EMPLOYER2,transfer,,,income,salary,True,False,True,"[""known_template""]",employer,False,True
+T003253,U0064,2BQ4W7KM,-24.67,SAR,2026-02-16T12:09:28,pos,,purchase,,,,,False,False,False,"[""garbage""]",,False,True
+T003273,U0072,STC PAY TRANSFER,-50.0,SAR,2025-12-27T11:45:06,wallet,CP-U0072-WALLET,transfer,,,transfer,topup,True,False,False,"[""known_template""]",wallet_provider,False,True
+T003643,U0006,STC PAY TRANSFER,56.0,SAR,2026-03-23T20:43:15,wallet,CP-U0006-FRIEND1,transfer,,,transfer,split,True,False,False,"[""known_template""]",friend:1,False,True
+T003822,U0033,STC PAY TRANSFER,-2027.62,SAR,2026-03-29T14:16:32,wallet,CP-U0033-BENEFICIARY1,transfer,,,transfer,remittance,True,False,False,"[""known_template""]",beneficiary:1,False,True
+T004011,U0066,WALLET TRANSFER REF972206,-100.0,SAR,2026-03-26T08:45:25,transfer,CP-U0066-ONE-a091a,transfer,,,transfer,gift,True,False,False,"[""known_template"", ""id_inject""]",unknown,False,True
+T004016,U0087,مطبخ القصيُم#٧٥٦٤٤,-60.41,SAR,2025-12-31T21:40:18,ecom,,purchase,M0057,Qassim Kitchen,food,,False,True,False,"[""arabic_base"", ""arabic_noise"", ""id_inject""]",,False,True
+T004125,U0052,MC_38500,-12.99,USD,2025-09-22T17:23:26,ecom,,purchase,M0346,Mad Club,entertainment,,False,True,False,"[""abbreviate"", ""id_inject"", ""truncate""]",,False,True
+T004745,U0066,STC PAY TRANSFER,500.0,SAR,2025-08-11T14:11:32,wallet,CP-U0066-ONE-89c39,transfer,,,transfer,gift,True,False,False,"[""known_template""]",unknown,False,True
+T004888,U0059,STC PAY TRANSFER,-100.0,SAR,2025-12-12T20:09:02,wallet,CP-U0059-WALLET,transfer,,,transfer,topup,True,False,False,"[""known_template""]",wallet_provider,False,True
+T005062,U0026,بيسترو الطائف RYD,-37.52,SAR,2025-12-02T16:39:47,ecom,,purchase,M0418,Tif Bistro,food,,False,False,False,"[""arabic_base"", ""city_code""]",,False,True
+T005312,U0052,ATM WITHDRAWAL DMM,-86.41,SAR,2026-01-04T16:35:02,atm,,cash,,,cash,,False,False,False,"[""city_code""]",,False,True
+T005506,U0146,MADA TRANSFER,-152.03,SAR,2026-06-29T23:01:11,transfer,CP-U0146-ONE-a4b9e,transfer,,,food,personal,True,False,False,"[""known_template""]",unknown,False,True
+T005728,U0137,NJRAN SHOP,-679.57,SAR,2026-06-18T07:36:47,pos,,purchase,M0462,Njran Shop,shopping,,False,True,False,"[""uppercase""]",,False,True
+T005772,U0133,WALLET TRANSFER,10268.0,SAR,2026-03-25T08:33:00,transfer,CP-U0133-EMPLOYER2,transfer,,,income,salary,True,False,True,"[""known_template""]",employer,False,True
+T005879,U0132,URPAY TRANSFER,8280.69,SAR,2025-10-25T08:21:00,transfer,CP-U0132-EMPLOYER2,transfer,,,income,salary,True,False,True,"[""known_template""]",employer,False,True
+T005903,U0135,APPLEPAY *JARIR_43847,-299.53,SAR,2026-06-30T09:51:37,ecom,,purchase,M0024,Jarir,shopping,,False,True,False,"[""uppercase"", ""prefix_inject"", ""id_inject""]",,False,True
+T005915,U0135,APPLEPAY *HAILCINEMA2,-7.42,USD,2025-11-25T12:50:53,ecom,,purchase,M0214,Hail Cinema,entertainment,,False,True,False,"[""known_pattern"", ""prefix_inject""]",,False,True
+T006321,U0141,SP *HAIL GAME ZONE DMM,-7.2,USD,2025-12-04T10:01:01,ecom,,purchase,M0254,Hail Game Zone,entertainment,,False,True,False,"[""uppercase"", ""prefix_inject"", ""city_code""]",,False,True
+T006850,U0041,KHOBAR CLUB#78192 JED,-10.14,USD,2026-03-31T09:18:02,ecom,,purchase,M0149,Khobar Club,entertainment,,False,True,False,"[""uppercase"", ""id_inject"", ""city_code""]",,False,True
+T007509,U0059,POS JED CLINIC#79910,-39.22,SAR,2025-09-28T18:08:18,pos,,purchase,M0401,Jed Clinic,health,,False,True,False,"[""uppercase"", ""prefix_inject"", ""id_inject""]",,False,True
+T007611,U0046,أنغامي,-12.15,USD,2026-01-05T19:32:27,ecom,,purchase,M0476,Anghami,entertainment,,False,True,False,"[""arabic_base""]",,False,True
+T007617,U0062,STC PAY TRANSFER,-10850,SAR,2026-05-28T11:43:00,wallet,CP-U0062-LANDLORD,transfer,,,bills,bill,True,False,True,"[""known_template""]",landlord,False,True
+T007661,U0055,STARBUCKS#22365,-16.11,SAR,2025-08-27T16:26:37,ecom,,purchase,M0331,Starbucks,food,,False,True,False,"[""uppercase"", ""id_inject""]",,False,True
+T007703,U0102,عيآدة ينبع,-835.0,SAR,2025-12-02T15:56:53,pos,,purchase,M0467,Yanbu Clinic,health,,False,True,False,"[""arabic_base"", ""arabic_noise""]",,False,True
+T007861,U0123,URPAY TRANSFER REF135268,-50.0,SAR,2026-02-25T11:59:48,wallet,CP-U0123-WALLET,transfer,,,transfer,topup,True,False,False,"[""known_template"", ""id_inject""]",wallet_provider,False,True
+T007898,U0126,APPLEPAY *UBER1,-179.78,SAR,2026-06-18T10:01:29,pos,,purchase,M0263,Uber,transport,,False,True,False,"[""known_pattern"", ""prefix_inject""]",,False,True
+T008078,U0050,STC PAY TRANSFER,-4485.39,SAR,2026-04-08T14:33:00,wallet,CP-U0050-BENEFICIARY1,transfer,,,transfer,remittance,True,False,False,"[""known_template""]",beneficiary:1,False,True
+T008147,U0064,SHHD DMM,-48.14,SAR,2026-03-04T17:48:00,ecom,,purchase,M0034,Shahid,entertainment,,False,True,True,"[""abbreviate"", ""city_code""]",,False,True
+T008230,U0102,STC PAY TRANSFER,-3900,SAR,2025-10-26T09:04:00,wallet,CP-U0102-LANDLORD,transfer,,,bills,bill,True,False,True,"[""known_template""]",landlord,False,True
+T008362,U0084,ألعثيم,-201.21,SAR,2026-03-16T20:50:57,pos,,purchase,M0489,Othaim,groceries,,False,True,False,"[""arabic_base"", ""arabic_noise""]",,False,True
+T008381,U0086,POS DT,-135.5,USD,2026-06-16T18:47:20,ecom,,purchase,M0085,Dmm Tours,travel,,False,True,False,"[""abbreviate"", ""space_symbol"", ""prefix_inject"", ""truncate""]",,False,True
+T008453,U0103,كودو DMM,-30.02,SAR,2025-12-04T09:39:30,pos,,purchase,M0322,Kudu,food,,False,True,False,"[""arabic_base"", ""city_code""]",,False,True
+T008509,U0100,STC PAY TRANSFER,-23.0,SAR,2026-06-03T14:54:37,wallet,CP-U0100-FRIEND2,transfer,,,transfer,split,True,False,False,"[""known_template""]",friend:2,False,True
+T008725,U0137,ستاربكس RYD,-18.74,SAR,2025-11-19T14:38:57,pos,,purchase,M0331,Starbucks,food,,False,True,False,"[""arabic_base"", ""city_code""]",,False,True
+T009417,U0007,سآسكو,-40.22,SAR,2026-05-19T14:26:33,pos,,purchase,M0174,Sasco,transport,,False,True,False,"[""arabic_base"", ""arabic_noise""]",,False,True
+T009780,U0134,STC PAY TRANSFER,14491.9,SAR,2026-06-27T12:52:00,wallet,CP-U0134-EMPLOYER2,transfer,,,income,salary,True,False,True,"[""known_template""]",employer,False,True
+T009786,U0104,SP *الَحمادي,-204.58,SAR,2025-11-28T12:12:57,ecom,,purchase,M0379,Al Hammadi Hospital,health,,False,False,False,"[""arabic_base"", ""arabic_noise"", ""prefix_inject""]",,False,True
+T009797,U0013,URPAY TRANSFER REF800170,-7900,SAR,2025-12-27T19:01:00,transfer,CP-U0013-LANDLORD,transfer,,,bills,bill,True,False,True,"[""known_template"", ""id_inject""]",landlord,False,True
+T009822,U0032,WALLET TRANSFER,500.0,SAR,2025-12-25T08:37:52,transfer,CP-U0032-ONE-5592c,transfer,,,transfer,gift,True,False,False,"[""known_template""]",unknown,False,True
+T010080,U0142,POS RYD TRAVEL AGENCY#70044,-207.75,USD,2026-05-01T07:16:30,pos,,purchase,M0325,Ryd Travel Agency,travel,,False,True,False,"[""uppercase"", ""prefix_inject"", ""id_inject""]",,False,True
+T010117,U0073,PENSION TRANSFER,6989.74,SAR,2026-04-04T10:42:00,transfer,CP-U0073-PENSION_FUND,income,,,income,,False,False,True,"[""known_template""]",pension_fund,False,True
+T010316,U0005,STC PAY TRANSFER,-3319.14,SAR,2026-03-12T19:38:49,wallet,CP-U0005-BENEFICIARY1,transfer,,,transfer,remittance,True,False,False,"[""known_template""]",beneficiary:1,True,True
+T010897,U0135,BUSINESS REVENUE TRANSFER,30604.52,SAR,2025-07-12T09:39:00,transfer,CP-U0135-SELF,income,,,income,,False,False,False,"[""known_template""]",self,False,True
+T010918,U0057,STC PAY TRANSFER,-30.79,SAR,2025-11-24T19:48:25,wallet,CP-U0057-ONE-4db67,transfer,,,food,personal,True,False,False,"[""known_template""]",unknown,False,True
+T010948,U0072,STC PAY TRANSFER,-100.0,SAR,2025-11-17T14:35:58,wallet,CP-U0072-WALLET,transfer,,,transfer,topup,True,False,False,"[""known_template""]",wallet_provider,False,True
+T011185,U0098,WALLET TRANSFER REF905634,-2200,SAR,2026-05-27T16:35:00,wallet,CP-U0098-LANDLORD,transfer,,,bills,bill,True,False,True,"[""known_template"", ""id_inject""]",landlord,False,True
+T011191,U0147,JEDMOBILESHOP1 82193,-68.24,SAR,2025-10-18T09:16:00,sadad,,purchase,M0437,Jed Mobile Shop,telecom,,False,False,False,"[""known_pattern"", ""id_inject""]",,False,True
+T011234,U0036,SP*RYDEATER_22063 SA,-45.81,SAR,2025-11-25T21:09:32,ecom,,purchase,M0088,Ryd Eatery,food,,False,False,False,"[""known_pattern"", ""id_inject"", ""city_code""]",,False,True
+T011237,U0116,REHLATI2,-364.95,USD,2025-12-05T13:26:36,ecom,,purchase,M0100,Rehlati,travel,,False,True,False,"[""known_pattern"", ""truncate""]",,False,True
+T011380,U0099,POS الحمادـي,-43.63,SAR,2025-09-02T20:59:04,pos,,purchase,M0379,Al Hammadi Hospital,health,,False,False,False,"[""arabic_base"", ""arabic_noise"", ""prefix_inject""]",,False,True
+T011714,U0136,STC PAY TRANSFER,-4050,SAR,2025-11-26T12:40:00,wallet,CP-U0136-LANDLORD,transfer,,,bills,bill,True,False,True,"[""known_template""]",landlord,False,True
+T011725,U0145,JED_TELECOM 6942,-192.62,SAR,2025-11-21T07:31:56,sadad,,purchase,M0158,Jed Telecom,telecom,,False,False,False,"[""known_pattern"", ""id_inject""]",,False,True
+T011765,U0118,URPAY TRANSFER REF102844,-3019.33,SAR,2026-04-11T07:59:31,transfer,CP-U0118-BENEFICIARY1,transfer,,,transfer,remittance,True,False,False,"[""known_template"", ""id_inject""]",beneficiary:1,False,True
+T011798,U0132,STC PAY TRANSFER,10377.76,SAR,2025-11-28T12:56:00,wallet,CP-U0132-EMPLOYER2,transfer,,,income,salary,True,False,True,"[""known_template""]",employer,False,True
+T011949,U0093,7ETNSSBA,-206.23,SAR,2026-05-12T12:05:59,pos,,purchase,,,,,False,False,False,"[""garbage""]",,False,True
+T012112,U0095,2YC80RQBK507J,-208.12,SAR,2025-09-07T14:50:53,pos,,purchase,,,,,False,False,False,"[""garbage""]",,False,True
+T012189,U0111,ATM WITHDRAWAL,-518.15,SAR,2026-05-30T06:45:33,atm,,cash,,,cash,,False,False,False,[],,False,True
+T012360,U0033,SUBWAY1 54828,-94.16,SAR,2026-04-23T17:45:09,pos,,purchase,M0464,Subway,food,,False,False,False,"[""known_pattern"", ""id_inject""]",,False,True
+T012454,U0059,4QBAOMC,-70.91,SAR,2026-01-19T20:49:26,ecom,,purchase,,,,,False,False,False,"[""garbage""]",,False,True
+T012466,U0113,BANK TRANSFER REF268212,-200.0,SAR,2026-06-25T17:37:56,transfer,CP-U0113-ONE-31685,transfer,,,transfer,gift,True,False,False,"[""known_template"", ""id_inject""]",unknown,False,True
+T012568,U0141,PURCHASE,-113.27,SAR,2026-04-12T18:52:18,ecom,,purchase,,,,,False,False,False,"[""garbage""]",,False,True
+T012599,U0085,POS 000000,-167.69,SAR,2026-06-06T17:22:11,ecom,,purchase,,,,,False,False,False,"[""garbage""]",,False,True
+T012697,U0033,MADA TRANSFER,-100.0,SAR,2026-05-29T07:11:38,wallet,CP-U0033-WALLET,transfer,,,transfer,topup,True,False,False,"[""known_template""]",wallet_provider,False,True
+T012791,U0035,STC PAY TRANSFER REF899233,11897.41,SAR,2025-12-27T10:35:00,transfer,CP-U0035-EMPLOYER2,transfer,,,income,salary,True,False,True,"[""known_template"", ""id_inject""]",employer,False,True
+T012978,U0059,POS مرافـق مكة,-142.92,SAR,2025-08-20T21:03:00,sadad,,purchase,M0484,Mak Utility Co,bills,,False,True,True,"[""arabic_base"", ""arabic_noise"", ""prefix_inject""]",,False,True
+T012984,U0113,إس تيـ سي,-130.69,SAR,2026-06-11T15:59:32,ecom,,purchase,M0016,STC,telecom,,False,True,False,"[""arabic_base"", ""arabic_noise"", ""truncate""]",,False,True
+T013057,U0008,STC PAY TRANSFER,-50.0,SAR,2026-06-26T22:12:26,wallet,CP-U0008-WALLET,transfer,,,transfer,topup,True,False,False,"[""known_template""]",wallet_provider,False,True
+T013069,U0134,MADA FARM SUPERSTORES,-223.8,SAR,2026-04-20T10:09:05,pos,,purchase,M0165,Farm Superstores,groceries,,False,True,False,"[""uppercase"", ""prefix_inject""]",,False,True
+T013272,U0144,ايكيا,-67.53,SAR,2026-05-29T19:52:40,ecom,,purchase,M0403,IKEA,shopping,,False,True,False,"[""arabic_base""]",,False,True
+T013279,U0003,التميمي JED,-212.46,SAR,2026-05-31T08:17:18,pos,,purchase,M0098,Tamimi,groceries,,False,True,False,"[""arabic_base"", ""city_code"", ""truncate""]",,False,True
+T013522,U0065,ATM WITHDRAWAL,-1005.39,SAR,2026-06-11T15:19:02,atm,,cash,,,cash,,False,False,False,[],,False,True
+T013797,U0106,MADA مكتب حكومْي جدة,-214.9,SAR,2026-03-24T19:02:56,sadad,,purchase,M0457,Jed Government Office,government,,False,False,False,"[""arabic_base"", ""arabic_noise"", ""prefix_inject""]",,False,True
+T014333,U0004,ATM WITHDRAWAL,-618.24,SAR,2026-05-09T19:15:41,atm,,cash,,,cash,,False,False,False,[],,False,True
+T014349,U0134,SP*BARNS,-21.41,SAR,2026-03-07T15:25:02,pos,,purchase,M0339,Barn's,food,,False,False,False,"[""known_pattern""]",,False,True
+T014461,U0116,STC PAY TRANSFER,-4152.64,SAR,2025-12-01T18:42:01,wallet,CP-U0116-SUPPLIER1,transfer,,,transfer,personal,True,False,False,"[""known_template""]",supplier:1,False,True
+T014476,U0084,BANK TRANSFER,-2488.73,SAR,2026-06-13T10:11:32,wallet,CP-U0084-BENEFICIARY1,transfer,,,transfer,remittance,True,False,False,"[""known_template""]",beneficiary:1,False,True
+T014713,U0055,STC PAY TRANSFER,129.0,SAR,2025-10-05T15:14:16,wallet,CP-U0055-FRIEND1,transfer,,,transfer,split,True,False,False,"[""known_template""]",friend:1,True,True
+T015088,U0129,MADA TRANSFER REF500113,-159.0,SAR,2026-02-08T14:39:07,transfer,CP-U0129-FRIEND1,transfer,,,transfer,split,True,False,False,"[""known_template"", ""id_inject""]",friend:1,False,True
+T015399,U0107,JED_MOBILE_SHOP,-129.67,SAR,2026-03-04T19:30:00,sadad,,purchase,M0437,Jed Mobile Shop,telecom,,False,False,False,"[""known_pattern""]",,False,True
+T015427,U0040,MADA TRANSFER,-52.22,SAR,2026-04-29T19:42:24,transfer,CP-U0040-ONE-b89fd,transfer,,,food,personal,True,False,False,"[""known_template""]",unknown,False,True
+T015497,U0056,SP*DMMCLUB#38655 JED,-5.83,USD,2026-05-15T12:41:29,ecom,,purchase,M0315,Dmm Club,entertainment,,False,True,False,"[""known_pattern"", ""id_inject"", ""city_code""]",,False,True
+T015722,U0071,MADA TRANSFER REF436477,-2550,SAR,2025-10-27T19:53:00,transfer,CP-U0071-LANDLORD,transfer,,,bills,bill,True,False,True,"[""known_template"", ""id_inject""]",landlord,False,True
+T015879,U0007,SP *كـارفور 49439,-313.48,SAR,2026-05-30T20:25:18,pos,,purchase,M0402,Carrefour,groceries,,False,True,False,"[""arabic_base"", ""arabic_noise"", ""prefix_inject"", ""id_inject""]",,False,True
+T015974,U0115,Z4VRWMB0Z0Z8X,-210.46,SAR,2025-08-19T21:48:43,ecom,,purchase,,,,,False,False,False,"[""garbage""]",,False,True
+T016069,U0125,PURCHASE,-32.99,SAR,2025-12-31T12:23:49,ecom,,purchase,,,,,False,False,False,"[""garbage""]",,False,True
+T016078,U0146,تموينات ـجدة,-98.02,SAR,2026-03-09T10:37:45,pos,,purchase,M0448,Jed Mart,groceries,,False,True,False,"[""arabic_base"", ""arabic_noise""]",,False,True
+T016200,U0141,STC PAY TRANSFER,-75.0,SAR,2026-03-24T09:14:07,wallet,CP-U0141-FRIEND1,transfer,,,transfer,split,True,False,False,"[""known_template""]",friend:1,False,True
+T016313,U0043,JGS#18403,-59.22,SAR,2026-06-11T10:12:38,pos,,purchase,M0087,Jizan Gas Station,transport,,False,True,False,"[""known_pattern"", ""id_inject""]",,False,True
+T016403,U0080,مطبخ تبوـك,-7.93,SAR,2026-05-15T07:09:37,pos,,purchase,M0280,Tabuk Kitchen,food,,False,True,False,"[""arabic_base"", ""arabic_noise""]",,False,True
+T016603,U0149,محل جوالات جدة,-111.31,SAR,2026-03-01T19:11:52,sadad,,purchase,M0437,Jed Mobile Shop,telecom,,False,False,False,"[""arabic_base""]",,False,True
+T016755,U0002,APPLEPAY *AL_HAMMADI_HOSPITAL 62931,-140.08,SAR,2026-04-08T21:39:53,pos,,purchase,M0379,Al Hammadi Hospital,health,,False,False,False,"[""known_pattern"", ""prefix_inject"", ""id_inject""]",,False,True
+T017000,U0109,*** ***,-195.6,SAR,2026-02-19T20:06:23,pos,,purchase,,,,,False,False,False,"[""garbage""]",,False,True
+T017006,U0113,MADA سوبر ماركت جازان DMM,-45.96,SAR,2026-05-09T19:41:19,pos,,purchase,M0094,Jizan Supermarket,groceries,,False,False,False,"[""arabic_base"", ""prefix_inject"", ""city_code""]",,False,True
+T017184,U0007,STC PAY TRANSFER,-55.35,SAR,2026-05-20T20:23:11,wallet,CP-U0007-ONE-ca022,transfer,,,food,personal,True,False,False,"[""known_template""]",unknown,False,True
+T017407,U0136,STC PAY TRANSFER,-50.0,SAR,2025-08-14T13:25:44,wallet,CP-U0136-WALLET,transfer,,,transfer,topup,True,False,False,"[""known_template""]",wallet_provider,False,True
+T017603,U0149,MADA SP*DANUBE,-261.38,SAR,2026-05-30T14:25:27,pos,,purchase,M0421,Danube,groceries,,False,True,False,"[""known_pattern"", ""prefix_inject""]",,False,True
+T017605,U0062,STC PAY TRANSFER,-10850,SAR,2025-11-26T12:42:00,wallet,CP-U0062-LANDLORD,transfer,,,bills,bill,True,False,True,"[""known_template""]",landlord,False,True
+T017709,U0033,STC PAY TRANSFER,-27.0,SAR,2026-04-01T18:33:52,wallet,CP-U0033-FRIEND1,transfer,,,transfer,split,True,False,False,"[""known_template""]",friend:1,False,True
+T017907,U0089,صب واي SA,-135.08,SAR,2025-11-29T15:42:48,pos,,purchase,M0464,Subway,food,,False,False,False,"[""arabic_base"", ""city_code""]",,False,True
+T017933,U0110,STC PAY TRANSFER REF180693,12885.55,SAR,2025-12-28T12:56:00,wallet,CP-U0110-EMPLOYER2,transfer,,,income,salary,True,False,True,"[""known_template"", ""id_inject""]",employer,False,True
+T018281,U0142,BANK TRANSFER REF955975,-20.0,SAR,2026-06-19T17:44:27,transfer,CP-U0142-WALLET,transfer,,,transfer,topup,True,False,False,"[""known_template"", ""id_inject""]",wallet_provider,False,True
+T018386,U0064,BANK TRANSFER,-6800,SAR,2025-11-26T19:30:00,wallet,CP-U0064-LANDLORD,transfer,,,bills,bill,True,False,True,"[""known_template""]",landlord,False,True
+T018468,U0086,STC PAY TRANSFER,-134.59,SAR,2026-04-21T19:22:05,wallet,CP-U0086-ONE-6add5,transfer,,,food,personal,True,False,False,"[""known_template""]",unknown,False,True
+T018556,U0045,كوٌدو#94166 RYD,-24.7,SAR,2026-06-11T20:58:50,pos,,purchase,M0322,Kudu,food,,False,True,False,"[""arabic_base"", ""arabic_noise"", ""id_inject"", ""city_code""]",,False,True
+T018829,U0051,STC PAY TRANSFER,-3772.59,SAR,2026-03-09T21:59:36,wallet,CP-U0051-BENEFICIARY1,transfer,,,transfer,remittance,True,False,False,"[""known_template""]",beneficiary:1,False,True
+T018845,U0097,سآسكو JED,-20.49,SAR,2026-03-24T17:18:34,pos,,purchase,M0174,Sasco,transport,,False,True,False,"[""arabic_base"", ""arabic_noise"", ""city_code""]",,False,True
+T018890,U0079,ZEXM3NURVQS,-117.49,SAR,2026-05-17T22:35:24,pos,,purchase,,,,,False,False,False,"[""garbage""]",,False,True
+T018936,U0082,STC PAY TRANSFER,-200.0,SAR,2026-05-24T08:39:37,wallet,CP-U0082-ONE-3f290,transfer,,,transfer,gift,True,False,False,"[""known_template""]",unknown,False,True
+T019024,U0094,URPAY TRANSFER REF213541,-4550,SAR,2026-04-26T20:14:00,wallet,CP-U0094-LANDLORD,transfer,,,bills,bill,True,False,True,"[""known_template"", ""id_inject""]",landlord,False,True
+T019056,U0063,ATM WITHDRAWAL,-100.55,SAR,2025-11-18T21:05:21,atm,,cash,,,cash,,False,False,False,[],,False,True
+T019114,U0150,POS محل بقالة القصيم RYD,-140.3,SAR,2026-02-04T11:06:49,pos,,purchase,M0251,Qassim Store,groceries,,False,True,False,"[""arabic_base"", ""prefix_inject"", ""city_code""]",,False,True
+T019125,U0128,اتصالات مكة_٩٢٧١٦,-175.88,SAR,2026-01-17T21:56:00,ecom,,purchase,M0146,Mak Telecom,telecom,,False,True,True,"[""arabic_base"", ""id_inject""]",,False,True
+T019265,U0085,MADA محل جوآلات المدينة,-90.97,SAR,2026-01-11T11:15:00,ecom,,purchase,M0336,Mad Mobile Shop,telecom,,False,True,True,"[""arabic_base"", ""arabic_noise"", ""prefix_inject""]",,False,True
+T019565,U0043,APPLEPAY *QO,-0.43,SAR,2025-11-29T20:49:03,ecom,,purchase,M0435,Qassim Outlet,shopping,,False,False,False,"[""known_pattern"", ""prefix_inject""]",,False,True
+T020098,U0059,PENSION TRANSFER,6933.32,SAR,2026-01-03T07:01:00,transfer,CP-U0059-PENSION_FUND,income,,,income,,False,False,True,"[""known_template""]",pension_fund,False,True
+T020338,U0039,خدمات القصيم_٣٠٨٤٦ DMM,-259.34,SAR,2026-01-25T10:22:00,sadad,,purchase,M0177,Qassim Services,bills,,False,True,True,"[""arabic_base"", ""id_inject"", ""city_code""]",,False,True
+T020472,U0135,BUSINESS REVENUE TRANSFER,4482.43,SAR,2025-08-23T12:08:00,transfer,CP-U0135-SELF,income,,,income,,False,False,False,"[""known_template""]",self,False,True
+T020636,U0054,SP *NANADIRECT#95725,-194.52,SAR,2026-05-20T18:28:07,ecom,,purchase,M0019,Nana Direct,groceries,,False,False,False,"[""known_pattern"", ""prefix_inject"", ""id_inject""]",,False,True
+T020801,U0117,STC PAY TRANSFER,-200.0,SAR,2026-01-26T20:53:17,wallet,CP-U0117-ONE-6156d,transfer,,,transfer,gift,True,False,False,"[""known_template""]",unknown,False,True
+T020816,U0115,SP *SP*NAHDI_88219,-736.15,SAR,2025-12-09T10:46:18,pos,,purchase,M0285,Nahdi,health,,False,True,False,"[""known_pattern"", ""prefix_inject"", ""id_inject""]",,False,True
+T020864,U0010,TXN REF 00000000,-29.83,SAR,2025-10-10T21:19:49,ecom,,purchase,,,,,False,False,False,"[""garbage""]",,False,True
+T021059,U0130,*** ***,-16.42,SAR,2026-01-15T15:27:58,pos,,purchase,,,,,False,False,False,"[""garbage""]",,False,True
+T021212,U0012,STC PAY TRANSFER,-2150,SAR,2026-05-26T11:29:00,wallet,CP-U0012-LANDLORD,transfer,,,bills,bill,True,False,True,"[""known_template""]",landlord,False,True
+T021234,U0125,STC PAY TRANSFER,-200.0,SAR,2026-02-05T13:23:05,wallet,CP-U0125-ONE-2cca8,transfer,,,transfer,gift,True,False,False,"[""known_template""]",unknown,False,True
+T021569,U0001,SP *HALF MILLION RYD,-23.74,SAR,2025-11-21T17:28:11,pos,,purchase,M0077,Half Million,food,,False,False,False,"[""known_pattern"", ""prefix_inject"", ""city_code""]",,False,True
+T021621,U0001,بقالة الرياض,-196.22,SAR,2025-12-05T20:20:25,pos,,purchase,M0316,Ryd Grocery,groceries,,False,True,False,"[""arabic_base""]",,False,True
+T021675,U0100,ATM WITHDRAWAL,-399.17,SAR,2026-03-18T17:22:53,atm,,cash,,,cash,,False,False,False,[],,False,True
+T021815,U0096,WALLET TRANSFER REF759352,-125.0,SAR,2026-06-12T14:49:34,wallet,CP-U0096-FRIEND1,transfer,,,transfer,split,True,False,False,"[""known_template"", ""id_inject""]",friend:1,False,True
+T021895,U0030,الـحمادي RYD,-4.94,SAR,2026-01-08T14:52:12,pos,,purchase,M0379,Al Hammadi Hospital,health,,False,False,False,"[""arabic_base"", ""arabic_noise"", ""city_code""]",,False,True
+T021949,U0041,SP *جاـهز_٦٨٢٤٠,-19.38,SAR,2026-01-22T10:54:49,ecom,,purchase,M0272,Jahez,food,,False,True,False,"[""arabic_base"", ""arabic_noise"", ""prefix_inject"", ""id_inject""]",,False,True
+T021953,U0121,HRFY_3718,-78.88,SAR,2025-09-04T18:59:40,ecom,,purchase,M0192,Herfy,food,,False,True,False,"[""abbreviate"", ""id_inject""]",,False,True
+T022021,U0101,فارْم سوبر ستورز JED,-105.4,SAR,2025-12-21T08:54:34,pos,,purchase,M0165,Farm Superstores,groceries,,False,True,False,"[""arabic_base"", ""arabic_noise"", ""city_code""]",,False,True
+T022136,U0111,BANK TRANSFER REF203368,-200.0,SAR,2026-01-19T21:38:22,wallet,CP-U0111-ONE-200a8,transfer,,,transfer,gift,True,False,False,"[""known_template"", ""id_inject""]",unknown,False,True
+T022187,U0058,STC PAY TRANSFER,-45.55,SAR,2026-02-25T20:51:42,wallet,CP-U0058-ONE-5c126,transfer,,,food,personal,True,False,False,"[""known_template""]",unknown,False,True
+T022256,U0023,SP *JAHEZ*RYDE* JED,-67.24,SAR,2026-03-21T11:14:46,pos,,purchase,M0088,Ryd Eatery,food,,False,False,False,"[""known_pattern"", ""aggregator_wrap"", ""prefix_inject"", ""city_code""]",,False,True
+T022257,U0131,5UL64P5NWD,-133.13,SAR,2026-05-14T19:13:55,ecom,,purchase,,,,,False,False,False,"[""garbage""]",,False,True
+T022396,U0026,WALLET TRANSFER,6570.45,SAR,2026-04-27T11:45:00,wallet,CP-U0026-EMPLOYER2,transfer,,,income,salary,True,False,True,"[""known_template""]",employer,False,True
+T022555,U0043,SP *JRR_36764,-651.08,SAR,2025-10-18T08:47:13,ecom,,purchase,M0024,Jarir,shopping,,False,True,False,"[""abbreviate"", ""prefix_inject"", ""id_inject""]",,False,True
+T022754,U0142,STC PAY TRANSFER,8100.58,SAR,2026-01-26T11:34:00,wallet,CP-U0142-EMPLOYER2,transfer,,,income,salary,True,False,True,"[""known_template""]",employer,False,True
+T022804,U0092,GIG PLATFORM PAYOUT,3931.74,SAR,2026-05-03T08:07:00,transfer,CP-U0092-GIG_PLATFORM,income,,,income,,False,False,False,"[""known_template""]",gig_platform,False,True
+T023281,U0043,ATM WITHDRAWAL,-292.83,SAR,2025-08-24T15:39:53,atm,,cash,,,cash,,False,False,False,[],,False,True
+T023449,U0110,SALARY TRANSFER - SABIC,21362.94,SAR,2026-03-18T12:34:00,transfer,CP-U0110-EMPLOYER,income,,,income,,False,False,True,"[""known_template""]",employer,False,True
+T023615,U0105,SASCO2,-25.34,SAR,2026-04-26T18:56:02,pos,,purchase,M0174,Sasco,transport,,False,True,False,"[""known_pattern""]",,False,True
+T023687,U0081,STC PAY TRANSFER,-4608.4,SAR,2026-01-08T10:39:57,wallet,CP-U0081-BENEFICIARY2,transfer,,,transfer,remittance,True,False,False,"[""known_template""]",beneficiary:2,False,True
+T023849,U0028,BUSINESS REVENUE TRANSFER,17871.38,SAR,2025-09-07T07:25:00,transfer,CP-U0028-SELF,income,,,income,,False,False,False,"[""known_template""]",self,False,True
+T024005,U0024,STC PAY TRANSFER,-165.0,SAR,2026-02-04T20:48:42,wallet,CP-U0024-FRIEND1,transfer,,,transfer,split,True,False,False,"[""known_template""]",friend:1,False,True
+T024278,U0068,STC PAY TRANSFER,-166.0,SAR,2026-01-01T08:48:09,wallet,CP-U0068-FRIEND1,transfer,,,transfer,split,True,False,False,"[""known_template""]",friend:1,False,True
+T024349,U0062,اتصالات ـينبع_٤٢٠٤٢,-131.43,SAR,2025-12-15T19:47:00,sadad,,purchase,M0349,Yanbu Telecom,telecom,,False,True,True,"[""arabic_base"", ""arabic_noise"", ""id_inject""]",,False,True
+T024378,U0133,SP *إلـعثيم RYD,-35.77,SAR,2026-02-26T16:16:43,pos,,purchase,M0489,Othaim,groceries,,False,True,False,"[""arabic_base"", ""arabic_noise"", ""prefix_inject"", ""city_code""]",,False,True
+T024440,U0008,BANK TRANSFER REF380761,-146.98,SAR,2026-01-11T23:21:54,transfer,CP-U0008-ONE-eb50d,transfer,,,food,personal,True,False,False,"[""known_template"", ""id_inject""]",unknown,False,True
+T024962,U0043,STC PAY TRANSFER,-4375.01,SAR,2025-08-08T16:49:19,wallet,CP-U0043-BENEFICIARY1,transfer,,,transfer,remittance,True,False,False,"[""known_template""]",beneficiary:1,True,True
+T025562,U0130,SBUX,-22.04,SAR,2026-04-08T13:04:14,pos,,purchase,M0331,Starbucks,food,,False,True,False,"[""known_pattern""]",,False,True
+T025667,U0076,بيسترو الطائف,-78.81,SAR,2026-05-08T08:01:57,pos,,purchase,M0418,Tif Bistro,food,,False,False,False,"[""arabic_base""]",,False,True
+T025923,U0051,STC PAY TRANSFER,-1264.2,SAR,2026-05-20T08:00:12,wallet,CP-U0051-BENEFICIARY1,transfer,,,transfer,remittance,True,False,False,"[""known_template""]",beneficiary:1,False,True
+T025973,U0096,STC PAY TRANSFER,-105.0,SAR,2025-11-26T19:13:04,wallet,CP-U0096-FRIEND1,transfer,,,transfer,split,True,False,False,"[""known_template""]",friend:1,False,True
+T026136,U0108,بيسترو المدينة,-18.95,SAR,2026-05-02T13:02:19,ecom,,purchase,M0173,Mad Bistro,food,,False,True,False,"[""arabic_base""]",,False,True
+T026230,U0066,URPAY TRANSFER,-50.0,SAR,2025-09-15T22:11:47,wallet,CP-U0066-WALLET,transfer,,,transfer,topup,True,False,False,"[""known_template""]",wallet_provider,False,True
+T026244,U0148,BUSINESS REVENUE TRANSFER,7577.2,SAR,2026-04-07T09:03:00,transfer,CP-U0148-SELF,income,,,income,,False,False,False,"[""known_template""]",self,False,True
+T026332,U0091,STC PAY TRANSFER,7327.81,SAR,2025-12-25T10:13:00,wallet,CP-U0091-EMPLOYER2,transfer,,,income,salary,True,False,True,"[""known_template""]",employer,False,True
+T026584,U0045,STC PAY TRANSFER,500.0,SAR,2026-04-19T09:56:18,wallet,CP-U0045-ONE-aa928,transfer,,,transfer,gift,True,False,False,"[""known_template""]",unknown,False,True
+T026685,U0061,SP *الحمادي,-192.58,SAR,2026-05-17T12:58:16,ecom,,purchase,M0379,Al Hammadi Hospital,health,,False,False,False,"[""arabic_base"", ""prefix_inject""]",,False,True
+T026904,U0077,STC PAY TRANSFER,-106.7,SAR,2025-10-30T23:25:52,wallet,CP-U0077-ONE-3665a,transfer,,,food,personal,True,False,False,"[""known_template""]",unknown,False,True
+T026926,U0035,STC PAY TRANSFER,11287.65,SAR,2025-11-27T08:07:00,wallet,CP-U0035-EMPLOYER2,transfer,,,income,salary,True,False,True,"[""known_template""]",employer,False,True
+T026952,U0100,ATM WITHDRAWAL,-199.38,SAR,2025-10-14T23:57:41,atm,,cash,,,cash,,False,False,False,[],,False,True
+T027174,U0057,ستاربكس,-14.83,SAR,2026-01-07T15:29:33,pos,,purchase,M0331,Starbucks,food,,False,True,False,"[""arabic_base""]",,False,True
+T027503,U0009,TAWAKKALNA3 SA,-338.34,SAR,2025-12-10T10:16:54,sadad,,purchase,M0080,Tawakkalna,government,,False,True,False,"[""known_pattern"", ""city_code""]",,False,True
+T027521,U0138,ساسكو,-69.69,SAR,2025-11-15T14:47:32,pos,,purchase,M0174,Sasco,transport,,False,True,False,"[""arabic_base""]",,False,True
+T027544,U0110,STC PAY TRANSFER,-20.0,SAR,2026-03-20T09:32:23,wallet,CP-U0110-WALLET,transfer,,,transfer,topup,True,False,False,"[""known_template""]",wallet_provider,False,True
+T027627,U0052,SP *HALF MILLION,-50.27,SAR,2026-01-31T20:21:55,pos,,purchase,M0077,Half Million,food,,False,False,False,"[""uppercase"", ""prefix_inject""]",,False,True
+T027692,U0069,BANK TRANSFER REF766465,-3141.08,SAR,2026-04-15T11:48:27,wallet,CP-U0069-BENEFICIARY1,transfer,,,transfer,remittance,True,False,False,"[""known_template"", ""id_inject""]",beneficiary:1,False,True
+T027987,U0134,ATM WITHDRAWAL,-616.19,SAR,2026-03-26T23:32:26,atm,,cash,,,cash,,False,False,False,[],,False,True
+T028009,U0131,أو اس ان,-11.37,USD,2025-09-07T22:55:29,ecom,,purchase,M0364,OSN,entertainment,,False,True,False,"[""arabic_base"", ""arabic_noise""]",,False,True
+T028024,U0015,PZUDYTKCN,-88.94,SAR,2026-02-14T19:19:25,ecom,,purchase,,,,,False,False,False,"[""garbage""]",,False,True
+T028106,U0134,STC PAY TRANSFER,100.0,SAR,2026-01-05T15:23:12,wallet,CP-U0134-ONE-296bd,transfer,,,transfer,gift,True,False,False,"[""known_template""]",unknown,False,True
+T028252,U0126,BANK TRANSFER,-100.0,SAR,2026-05-01T09:59:33,wallet,CP-U0126-WALLET,transfer,,,transfer,topup,True,False,False,"[""known_template""]",wallet_provider,False,True
+T028437,U0090,STC PAY TRANSFER,-196.98,SAR,2026-05-12T21:54:43,wallet,CP-U0090-ONE-2cc2d,transfer,,,food,personal,True,False,False,"[""known_template""]",unknown,False,True
+T028530,U0033,MADA TABUK_OUTLET,-351.47,SAR,2026-04-23T14:09:12,pos,,purchase,M0450,Tabuk Outlet,shopping,,False,True,False,"[""uppercase"", ""space_symbol"", ""prefix_inject""]",,False,True
+T028600,U0093,BANK TRANSFER,-2941.86,SAR,2026-02-18T17:17:09,wallet,CP-U0093-SUPPLIER3,transfer,,,transfer,personal,True,False,False,"[""known_template""]",supplier:3,False,True
+T028624,U0097,POS HUNGER STATION,-60.83,SAR,2025-11-28T14:08:59,pos,,purchase,M0235,HungerStation,food,,False,True,False,"[""known_pattern"", ""prefix_inject""]",,False,True
+T028893,U0018,SP *هنقرستيشن RYD,-54.2,SAR,2025-12-19T17:25:08,ecom,,purchase,M0235,HungerStation,food,,False,True,False,"[""arabic_base"", ""prefix_inject"", ""city_code""]",,False,True
+T028902,U0150,JS#34115,-143.58,SAR,2026-02-06T11:19:11,pos,,purchase,M0094,Jizan Supermarket,groceries,,False,False,False,"[""abbreviate"", ""id_inject""]",,False,True
+T029269,U0121,STC PAY TRANSFER,-129.0,SAR,2026-05-07T21:35:25,wallet,CP-U0121-FRIEND1,transfer,,,transfer,split,True,False,False,"[""known_template""]",friend:1,False,True
+T029471,U0068,ALHA*,-266.46,SAR,2026-01-13T15:55:24,ecom,,purchase,M0379,Al Hammadi Hospital,health,,False,False,False,"[""known_pattern""]",,False,True
+T029505,U0112,SP*QASSIMTO,-441.97,USD,2026-03-17T18:59:53,ecom,,purchase,M0451,Qassim Tours,travel,,False,True,False,"[""known_pattern""]",,False,True
+T029565,U0146,SP *KHOBARGRILL,-84.11,SAR,2026-04-20T21:50:48,ecom,,purchase,M0061,Khobar Grill,food,,False,True,False,"[""known_pattern"", ""prefix_inject""]",,False,True
+T029663,U0009,URPAY TRANSFER,-50.0,SAR,2026-03-16T15:30:44,wallet,CP-U0009-WALLET,transfer,,,transfer,topup,True,False,False,"[""known_template""]",wallet_provider,False,True
+T029836,U0084,SALARY TRANSFER - SOLUTIONS LLC,17461.12,SAR,2026-01-26T12:42:00,transfer,CP-U0084-EMPLOYER,income,,,income,,False,False,True,"[""known_template""]",employer,False,True
+T029878,U0043,POS بوتيك أـلمدينة JED,-857.0,SAR,2026-04-26T09:05:34,pos,,purchase,M0152,Mad Boutique,shopping,,False,True,False,"[""arabic_base"", ""arabic_noise"", ""prefix_inject"", ""city_code""]",,False,True

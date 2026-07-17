@@ -57,14 +57,16 @@ engine/
   clean.py                    Layer 1: exact -> fuzzy -> vector merchant resolution
   schema.py                   EnrichedTransaction Pydantic v2 output contract
   predict.py                  Layer 2: category/intent rules + corrections store + enrich()
+  aggregate.py                per-user dashboard aggregation (totals/by_category/top_merchants), shared by the API and Layer 3
   explain.py                  Layer 3: Gemini report()/chat()
 
 eval/
   run_eval.py                 scores engine vs answer-key columns, writes metrics.json
   metrics.json                latest eval results (generated)
+  metrics_old.json            pre-coverage-change eval results, kept for comparison (see README §6)
 
 api/
-  main.py                     FastAPI app: /enrich /correct /report /chat /metrics
+  main.py                     FastAPI app: /enrich /correct /report /chat /metrics /user/{user_id}/dashboard
 ```
 
 ---
@@ -75,21 +77,24 @@ Everything is **generated truth-first, then corrupted** — the true merchant/ca
 
 ### `data/merchants.csv` — 500 rows
 - 35 **real seed merchants** used verbatim from the spec (McDonald's, Al Baik, STC, Panda, Careem, Netflix, SEC, Absher, Saudia, ...), expanded with a **curated brand long tail** (~100 more real/plausible Saudi/regional brands: Domino's, KFC, Lulu, Jarir-adjacent shopping brands, hospitals, telecoms, etc.) and a **procedurally generated long tail** (`{City} {Category noun}` combos, e.g. "Khobar Pharmacy", "Njran Foundation") to reach 500.
-- **70.0% `in_directory=true`** exactly (350/500) — the 30% "false" merchants are real (have a true category/name) but deliberately excluded from Layer 1's index, to exercise graceful degradation on genuinely unknown merchants.
-- Power-law-friendly: each merchant carries `descriptor_patterns` (known dirty aliases Layer 1 can exact-match), `amount_mean/std`, `recurrence` (none/weekly/monthly), `aggregator` (e.g. some food merchants show wrapped via `JAHEZ`/`HUNGERSTATION`), and `cities`.
+- **97.0% `in_directory=true`** (485/500) — updated from an earlier 70/30 split to match real-bank realism: a bank knows almost all of its own merchants. The remaining ~3% "new/unverified" merchants exist only so Layer 1's vector fallback still has something to catch occasionally.
+- Every merchant carries **at least 3** (typically 6) `descriptor_patterns` (known dirty aliases Layer 1 can exact-match), and every alias — `name_en`, `name_ar`, and every pattern, across **all 500 merchants** — is guaranteed collision-free after normalization: generation walks candidate aliases in priority order (full name → compact form → `SP*` variant → word-initial abbreviation → truncation) and skips any candidate already claimed by a different merchant, rather than letting two merchants silently share one exact-index entry.
+- Power-law-friendly: each merchant also carries `amount_mean/std`, `recurrence` (none/weekly/monthly), `aggregator` (e.g. some food merchants show wrapped via `JAHEZ`/`HUNGERSTATION`), and `cities`.
 - Category spread across the 12 spending categories (of the 15 total keys — `transfer`/`income`/`cash` aren't merchant categories).
 
-**Bug caught & fixed during generation:** the procedural long tail's collision-handling originally disambiguated only the English name on a name clash, leaving ~180/500 merchants sharing an identical Arabic name with a sibling merchant (e.g. two different "مول جدة"). Fixed so both `name_en` and `name_ar` get the same disambiguating suffix.
+**Two bugs caught & fixed during generation:**
+1. The procedural long tail's collision-handling originally disambiguated only the English name on a name clash, leaving ~180/500 merchants sharing an identical Arabic name with a sibling merchant. Fixed so both `name_en` and `name_ar` get the same disambiguating suffix.
+2. Raising `in_directory` coverage to 97% surfaced a second, subtler collision: short derived aliases like a 4-letter truncation (`SAUD*`) or a word-initial abbreviation (`CC`) were sometimes shared by two *different* real brands (e.g. "Costa Coffee" and "Caribou Coffee" both abbreviate to `CC`; "Saudia", "Saudi German Hospital", and "Saudi Red Crescent" all truncate to `SAUD*`). Fixed by making pattern selection **skip** any candidate that collides with another merchant instead of keeping it — real brand names are left untouched, and the merchant just gets a slightly less punchy (but unique) alias in its place.
 
 ### `data/users.csv` — 150 rows
 25 users per persona archetype (student, young_family, gig_worker, professional, retiree, business_owner), each following that persona's income/rent/subscription/qattah/remittance rules from the spec (e.g. students: family_support 1,500–2,500 SAR, ~85% do qattah, rarely have rent; business_owner: irregular business_revenue, counterparty kind `self`, supplier transfers). `recurring_subs` references real `merchant_id`s pulled only from monthly-recurring, `in_directory=true` merchants.
 
-### `data/transactions.csv` — 31,476 rows + `data/golden_set.csv` — 214 rows
-- **Mix:** purchase 26,200 (83%) · transfer 2,497 (8%) · income 1,834 (6%) · cash 945 (3%).
-- **Merchant realism:** power-law weighted (a "top 20" of the real seed anchors get disproportionate purchase volume), ~10.8% of identifiable purchases are `in_directory=false` (unknown-merchant test bed), ~2.5% are pure garbage strings mapping to nothing.
+### `data/transactions.csv` — 30,035 rows + `data/golden_set.csv` — 214 rows
+- **Mix:** purchase 24,678 (82%) · transfer 2,634 (9%) · income 1,821 (6%) · cash 902 (3%).
+- **Merchant realism:** power-law weighted (a "top 20" of the real seed anchors get disproportionate purchase volume). Matching the merchant-directory change above, only **~2.7%** of identifiable purchases are now `in_directory=false` (down from ~10.8%), and only **~1.0%** of rows are pure garbage strings mapping to nothing (down from ~2.5%) — a bank sees almost all of its own merchants, so unknowns should be the exception, not a routine 1-in-10 event.
 - **Corruption operators** (stacked probabilistically, recorded in `corruption_ops`): abbreviate, uppercase, space→symbol, prefix inject (`POS `, `SP *`, `MADA `, `APPLEPAY *`), id inject, city code, truncate, aggregator wrap, Arabic transliteration/noise (alef-variant swaps, tatweel insertion, tashkeel insertion, Arabic-Indic digits) — ~75/25 Latin/Arabic split, with injected noise (prefixes/ids/city codes) kept Latin even inside Arabic strings, matching real bank statements.
-- **Ambiguous transfers (the thesis demo):** every transfer-type row shares a generic raw string (many literally the exact string `STC PAY TRANSFER` — 1,238 rows in the dataset, spanning **all 7** intent labels) and only context (amount, day-of-month, time-of-day, recurring counterparty) determines `true_intent` ∈ {gift, split, personal, remittance, bill, salary, topup}. All transfer rows are flagged `is_ambiguous=true` by construction, since Layer 1 has no merchant to go on for them.
-- `true_intent` distribution: personal 860 · bill 559 · gift 399 · split 350 · topup 212 · remittance 64 · salary 53.
+- **Ambiguous transfers (the thesis demo):** every transfer-type row shares a generic raw string (many literally the exact string `STC PAY TRANSFER`, spanning **all 7** intent labels) and only context (amount, day-of-month, time-of-day, recurring counterparty) determines `true_intent` ∈ {gift, split, personal, remittance, bill, salary, topup}. All transfer rows are flagged `is_ambiguous=true` by construction, since Layer 1 has no merchant to go on for them.
+- `true_intent` distribution: personal 899 · bill 553 · gift 388 · split 418 · topup 236 · remittance 87 · salary 53.
 - **Golden set** (`is_golden=true`, 214 rows): stratified across known/unknown merchants, every ambiguous intent type (≥12 each), Arabic descriptors, FX/USD rows, cash, income, and garbage.
 - **Correction set:** 40 ambiguous rows flagged `mark_for_correction=true`, held out for the live-correction demo.
 
@@ -137,39 +142,39 @@ Only `in_directory=true` merchants are ever loaded into any of these three indic
 
 ## 6. Eval results (`eval/run_eval.py` → `eval/metrics.json`)
 
-Run over the full 31,476-row dataset and the 214-row golden set. **These are the real, current numbers** — not placeholders.
+Run over the full 30,035-row dataset and the 214-row golden set, **after** the 70%→97% `in_directory` coverage change above. `eval/metrics_old.json` keeps the pre-change numbers side by side for comparison.
 
-| Metric | Full set (n=31,476) | Golden set (n=214) |
-|---|---|---|
-| `deterministic_pct` (no vector/LLM needed) | 87.06% | 85.05% |
-| `merchant_accuracy` — **known merchants only** | **88.41%** (n=22,685) | 93.85% (n=65) |
-| `merchant_accuracy` — blended incl. unknowns (misleading, kept for reference) | 78.9% | 64.21% |
-| unknown-merchant graceful-decline rate | 54.96% (n=2,733) | 43.33% (n=30) |
-| `category_accuracy` | 87.8% (n=30,694) | 88.44% (n=199) |
-| `intent_accuracy_ambiguous` (is_ambiguous rows only) | 90.31% (n=2,497) | 95.24% (n=84) |
-| `avg_deterministic_latency_ms` (cold, single live txn) | 45.15 ms | — |
-| token-cost multiplier, naive raw→LLM vs. our aggregate-based approach | 86.1x | — |
+| Metric | Full set — before (70%) | Full set — **after (97%)** | Golden set — after |
+|---|---|---|---|
+| `deterministic_pct` (no vector/LLM needed) | 87.06% | **93.99%** | 84.58% |
+| `merchant_accuracy` — **known merchants only** | 88.41% (n=22,685) | **92.4%** (n=23,725) | 95.31% (n=64) |
+| `merchant_accuracy` — blended incl. unknowns (kept for reference) | 78.9% | 90.6% (n=24,379) | 73.68% (n=95) |
+| unknown-merchant graceful-decline rate | 54.96% (n=2,733) | 57.03% (n=654) | 51.61% (n=31) |
+| `category_accuracy` | 87.8% (n=30,694) | **93.14%** (n=29,736) | 88.44% (n=199) |
+| `intent_accuracy_ambiguous` (is_ambiguous rows only) | 90.31% (n=2,497) | 90.13% (n=2,634) | 89.29% (n=84) |
+| `avg_deterministic_latency_ms` (cold, single live txn) | 45.15 ms | 118.23 ms | — |
+| token-cost multiplier, naive raw→LLM vs. our aggregate-based approach | 86.1x | 86.1x | — |
 
-`resolved_by` breakdown (full set): exact 20,589 · rules 5,271 · vector 4,072 · fuzzy 1,539 · correction 5.
+`resolved_by` breakdown (full set, after): exact 21,793 · rules 5,357 · vector 1,804 · fuzzy 1,081.
 
 A 15×15 category confusion matrix is also written into `metrics.json`.
 
-**Two honest findings surfaced by this eval, not yet acted on:**
-1. **`merchant_accuracy` needed splitting.** The naive single number (78.9%) conflates two very different things: genuinely misidentifying a known merchant, and *correctly* declining to guess an unknown one. Split into "known merchants only" (88.41% — the real headline) and a separate "graceful decline rate" for unknowns.
-2. **Unknown-merchant graceful-decline rate is only ~55%.** Meaning nearly half the time, an unknown merchant's corrupted string gets fuzzy/vector-matched to some *other*, similarly-named known merchant instead of correctly returning "no match." This points to `FUZZY_THRESHOLD` (85) and/or `VECTOR_MAX_DISTANCE` (0.60) in `engine/clean.py` being a bit permissive. Tightening them would likely trade off against known-merchant recall — flagged as the natural next tuning step, not yet done.
-
-A related, structural cause: some procedurally-generated merchant names are near-duplicates by design (e.g. "Hail Supermarket" vs. "Hail Supermarket 74", created by the collision-suffix logic in `gen_merchants.py`) — fuzzy/vector matching can't always tell these apart, which is a realistic limitation, not an engine bug.
+**What moved, and why:**
+- **`merchant_accuracy` (known-only) and `category_accuracy` both jumped several points.** Expected: with 485/500 merchants now in Layer 1's directory instead of 350/500, far more purchases resolve via cheap, high-confidence `exact`/`fuzzy` matches instead of falling through to the noisier vector fallback — `deterministic_pct` rose from 87% to 94% and vector-fallback volume dropped from 4,072 to 1,804 rows even though the dataset is only slightly smaller.
+- **`avg_deterministic_latency_ms` went up (45ms → 118ms), not down.** This is a real, expected trade-off, not a regression: rapidfuzz's fuzzy step scores every known alias, and the directory now holds ~485 merchants × ~6 aliases each (guaranteed-unique, so none were dropped) versus a smaller, patchier alias set before. A bigger, cleaner directory costs more per fuzzy lookup — still well under 150ms per transaction, fine for this prototype's use case.
+- **Unknown-merchant graceful-decline rate barely moved (~55%→57%)** and its sample size shrank a lot (2,733→654 rows), matching the ~3% unknown-merchant target. This confirms it's a property of `FUZZY_THRESHOLD`/`VECTOR_MAX_DISTANCE` in `engine/clean.py`, not of how many unknowns exist in the data — still flagged as the natural next tuning step, not yet done.
 
 ---
 
 ## 7. API (`api/main.py`)
 
-FastAPI, CORS enabled, ~85 lines, only calls the functions above. Verified live via `uvicorn api.main:app --port 8000`:
+FastAPI, CORS enabled, only calls the functions above. Verified live via `uvicorn api.main:app --port 8000`:
 
 - `POST /enrich` — `{transactions:[RawTxn]}` → `{transactions:[EnrichedTransaction]}`. Tested with one ambiguous STC PAY transfer + one known-merchant purchase; both enriched correctly.
 - `POST /correct` — `{txn_id, category, display_name}` → updated `EnrichedTransaction` with `resolved_by="correction"`. Verified the correction **persists**: re-`/enrich`-ing the same `txn_id` afterwards still returns the corrected value.
 - `POST /report` — `{user_id, month}` → `{report_markdown}` (Arabic).
-- `POST /chat` — `{user_id, message}` → `{answer}` (Arabic).
+- `POST /chat` — `{user_id, message, month?}` → `{answer}` (Arabic). Now a general finance assistant grounded in the same aggregate the dashboard shows — see §11 below.
+- `GET /user/{user_id}/dashboard?month=YYYY-MM` — the per-user spending dashboard (income/spending/net/savings, category breakdown, top merchants, enriched transactions). `month` optional, defaults to the user's latest available month. See §11 below.
 - `GET /metrics` → contents of `eval/metrics.json` (404s cleanly if eval hasn't been run yet).
 
 ---
@@ -205,7 +210,58 @@ Python 3.13 (3.11+ required) · pandas · rapidfuzz · chromadb (local ONNX Mini
 
 ## 10. Status
 
-Everything in `docs/PROMPTS.md`'s build order is done: data generation (3 scripts + golden set), all 3 engine layers, the corrections/learning loop, eval with real numbers, and a working API — all individually tested against real data, not just imported and assumed to work. Known follow-ups, in rough priority order:
-- Tighten `FUZZY_THRESHOLD`/`VECTOR_MAX_DISTANCE` to improve the unknown-merchant graceful-decline rate (currently ~55%).
-- Consider a frontend to actually exercise `/enrich`, `/correct`, `/report`, `/chat` visually.
-- `data/corrections.json` currently has 2 demo corrections left over from testing (`U0082`, `U0061`) — harmless, but worth clearing before a clean demo run if you want a pristine corrections store.
+Everything in `docs/PROMPTS.md`'s build order is done: data generation (3 scripts + golden set), all 3 engine layers, the corrections/learning loop, eval with real numbers, a working API, a per-user dashboard endpoint, and a general-purpose Arabic finance-assistant chat — all individually tested against real data, not just imported and assumed to work. `data/corrections.json` is a clean `{}` (the 2 demo corrections from earlier testing were cleared). Known follow-ups, in rough priority order:
+- Tighten `FUZZY_THRESHOLD`/`VECTOR_MAX_DISTANCE` to improve the unknown-merchant graceful-decline rate (currently ~57%).
+- Build an actual UI against `/user/{user_id}/dashboard` and `/chat` — see §11 for how.
+
+**Locked-in demo user:** `U0023` (student, home city MAD). Their latest month (2026-06) tells a clean, relatable story: 32 transactions, food is the clear #1 category (676.32 SAR / 31.6%, 16 transactions across Herfy/Kudu/HungerStation), transport #2 (Uber, 383.09 SAR), essentially break-even (net −51.05 SAR, savings rate −2.4%). Good spread of merchants, no single outlier transaction dominating the story artificially.
+
+---
+
+## 11. Frontend integration guide
+
+Two endpoints exist specifically for the frontend to build a personal-finance UI on top of: **`GET /user/{user_id}/dashboard`** (structured numbers for charts/summary cards) and **`POST /chat`** (free-text Arabic Q&A grounded in that same data). Both are read-only from the frontend's perspective — they compute everything live from `data/transactions.csv` + `data/users.csv` on each call, there's nothing to "load" or "sync" first beyond having run the data-generation scripts once (§8).
+
+### Why these two exist
+The dashboard endpoint answers "show me my money, visually." The chat endpoint answers "let me ask about my money in my own words." Both are built from the exact same aggregate (`engine/aggregate.py::build_dashboard()`), so **the chatbot can never contradict the dashboard** — if the UI shows food at 676.32 SAR, the chatbot will cite that same number, not a different one it computed separately.
+
+### `GET /user/{user_id}/dashboard?month=YYYY-MM`
+`month` is optional — omit it to get the user's most recent month with data. Response shape:
+
+```jsonc
+{
+  "user": { "user_id": "U0023", "persona": "student", "income_monthly": 2201.49, "home_city": "MAD" },
+  "month": "2026-06",
+  "totals": { "income": 2091.48, "spending": 2142.53, "net": -51.05, "savings_rate": -0.0244 },
+  "by_category": [
+    { "category": "food", "label_ar": "طعام ومطاعم", "count": 16, "total": 676.32, "pct": 31.6 },
+    // ... sorted high to low by total, spending categories only
+  ],
+  "top_merchants": [
+    { "name": "Uber", "slug": "uber", "total": 309.32, "count": 2 },
+    // ... up to 8, spending only, sorted high to low
+  ],
+  "transactions": [ /* full EnrichedTransaction[] for that month, see engine/schema.py */ ]
+}
+```
+
+Build with this: `totals` → 3-4 summary cards (income/spending/net, with `savings_rate` as a %). `by_category` → a bar/donut chart, `label_ar` is ready-to-render Arabic (no lookup table needed on the frontend). `top_merchants` → a "where your money went" list, `slug` is stable and safe to use as a React key or for merchant icons. `transactions` → a scrollable transaction list/table if you want one; each item is the same `EnrichedTransaction` shape `/enrich` returns, so any component built for one works for the other.
+
+### `POST /chat`
+```jsonc
+// request
+{ "user_id": "U0023", "message": "وش أكثر شي صرفت عليه هذا الشهر؟", "month": "2026-06" /* optional */ }
+// response
+{ "answer": "أكثر فئة صرفت عليها هذا الشهر هي **طعام ومطاعم (food)** بإجمالي **676.32 ريال**..." }
+```
+This is a general assistant, not a single-purpose "savings bot" — it was tested against three different question types on `U0023` and answered all three correctly, grounded in real figures:
+1. *"وش أكثر شي صرفت عليه هذا الشهر؟"* (what did I spend most on?) → named `food`, cited 676.32 SAR / 31.6% / 16 transactions, and named `Uber` as the top single merchant.
+2. *"كم صرفت في المطاعم مقارنة بالبقالة؟"* (food vs. groceries?) → compared 676.32 SAR vs 175.20 SAR and stated the exact 501.12 SAR gap.
+3. *"أبغى أوفر ٥٠٠ ريال، من وين أقلّل؟"* (I want to save 500 SAR, where from?) → gave a concrete, additive plan citing real merchants: −250 SAR from food (naming Herfy/HungerStation specifically), −150 SAR from Uber, −100 SAR from shopping (naming Jed Boutique) — summing to exactly 500.
+
+Frontend-wise: render `answer` as Markdown (the model returns `**bold**` for figures/categories — that's intentional, not an accident to strip out). The reply is always in Arabic; there's no language-switching to design around. Pass `month` through if the user is looking at a specific month on the dashboard, so the chatbot answers about *that* month rather than defaulting to the latest one.
+
+### Rules baked into the assistant (so the frontend doesn't need to re-guard against them)
+- It only cites categories/merchants/numbers that exist in that user's real data — it will not invent a category the data doesn't have.
+- If asked something the data genuinely can't answer, it says so rather than guessing.
+- Savings/goal questions always get a quantified per-category breakdown (real SAR amounts, real merchant names), never generic advice like "cook at home more."
